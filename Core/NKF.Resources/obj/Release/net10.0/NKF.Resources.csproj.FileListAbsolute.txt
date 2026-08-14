@@ -1,0 +1,16 @@
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/bin/Release/net10.0/NKF.Resources.deps.json
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/bin/Release/net10.0/NKF.Resources.dll
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/bin/Release/net10.0/NKF.Resources.pdb
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.FrameWorkDataDictionary.resources
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.Messages.FrameWorkValidations.resources
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.Messages.FramWorkErrorMessages.resources
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.csproj.GenerateResource.cache
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.GeneratedMSBuildEditorConfig.editorconfig
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.AssemblyInfoInputs.cache
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.AssemblyInfo.cs
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.csproj.CoreCompileInputs.cache
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.sourcelink.json
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.dll
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/refint/NKF.Resources.dll
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/NKF.Resources.pdb
+/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Resources/obj/Release/net10.0/ref/NKF.Resources.dll

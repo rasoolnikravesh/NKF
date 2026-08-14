@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "fEbkpwqMAdk=",
+  "success": true,
+  "projectFilePath": "/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Core/NKF.Application.Contracts.Base/NKF.Application.Contracts.Base.csproj",
+  "expectedPackageFiles": [
+    "/home/rasoolnikravesh/.nuget/packages/fluentresults/4.0.0/fluentresults.4.0.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.extensions.logging.abstractions/2.1.1/microsoft.extensions.logging.abstractions.2.1.1.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "dgSpecHash": "3lTBd5vnG0I=",
+  "success": true,
+  "projectFilePath": "/home/rasoolnikravesh/Projects/NKP/src/FrameWork/Tests/NKF.Domain.Tests/NKF.Domain.Tests.csproj",
+  "expectedPackageFiles": [
+    "/home/rasoolnikravesh/.nuget/packages/coverlet.collector/10.0.1/coverlet.collector.10.0.1.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/fluentassertions/8.10.0/fluentassertions.8.10.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/fluentresults/4.0.0/fluentresults.4.0.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/mediatr/14.1.0/mediatr.14.1.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.codecoverage/18.5.1/microsoft.codecoverage.18.5.1.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.0/microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.0/microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.identitymodel.abstractions/8.14.0/microsoft.identitymodel.abstractions.8.14.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.identitymodel.jsonwebtokens/8.14.0/microsoft.identitymodel.jsonwebtokens.8.14.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.identitymodel.logging/8.14.0/microsoft.identitymodel.logging.8.14.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.identitymodel.tokens/8.14.0/microsoft.identitymodel.tokens.8.14.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.net.test.sdk/18.5.1/microsoft.net.test.sdk.18.5.1.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.testplatform.objectmodel/18.5.1/microsoft.testplatform.objectmodel.18.5.1.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/microsoft.testplatform.testhost/18.5.1/microsoft.testplatform.testhost.18.5.1.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/xunit/2.9.3/xunit.2.9.3.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/xunit.abstractions/2.0.3/xunit.abstractions.2.0.3.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/xunit.analyzers/1.18.0/xunit.analyzers.1.18.0.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/xunit.assert/2.9.3/xunit.assert.2.9.3.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/xunit.core/2.9.3/xunit.core.2.9.3.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/xunit.extensibility.core/2.9.3/xunit.extensibility.core.2.9.3.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/xunit.extensibility.execution/2.9.3/xunit.extensibility.execution.2.9.3.nupkg.sha512",
+    "/home/rasoolnikravesh/.nuget/packages/xunit.runner.visualstudio/3.1.4/xunit.runner.visualstudio.3.1.4.nupkg.sha512"
+  ],
+  "logs": []
+}

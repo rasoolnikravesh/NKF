@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Update="Messages\FramWorkErrorMessages.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>FramWorkErrorMessages.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Messages\FrameWorkValidations.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>FrameWorkValidations.resx</DependentUpon>
+      </Compile>
+      
+      <Compile Update="FrameWorkDataDictionary.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>FrameWorkDataDictionary.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Messages\FramWorkErrorMessages.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Messages\FrameWorkValidations.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Validations.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="FrameWorkDataDictionary.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>DataDictionary.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+</Project>

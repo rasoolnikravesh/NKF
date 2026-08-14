@@ -1,0 +1,2 @@
+namespace NKF.Domain.SeedWorks;
+
