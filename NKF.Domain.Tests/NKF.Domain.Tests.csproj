@@ -5,6 +5,11 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
+        <PackageId>NKF.Domain.Tests</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Rasool Nikravesh</Authors>
+        <Description>NKF Domain Tests Framework</Description>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
