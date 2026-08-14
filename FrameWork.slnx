@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="NKF.Application.Base/NKF.Application.Base.csproj" />
+  <Project Path="NKF.Application.Contracts.Base/NKF.Application.Contracts.Base.csproj" />
+  <Project Path="NKF.Domain.Events/NKF.Domain.Events.csproj" />
+  <Project Path="NKF.Domain/NKF.Domain.csproj" />
+  <Project Path="NKF.Persistence.Base/NKF.Persistence.Base.csproj" />
+  <Project Path="NKF.Resources/NKF.Resources.csproj" />
+  <Project Path="NKF.Persistence.Postgres.Base/NKF.Persistence.Postgres.Base.csproj" />
+  <Project Path="NKF.Domain.Tests/NKF.Domain.Tests.csproj" />
+</Solution>
