@@ -23,7 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\NKF.Domain\NKF.Domain.csproj" />
       <ProjectReference Include="..\NKF.Domain\NKF.Domain.csproj" />
     </ItemGroup>
 
