@@ -7,8 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\NKF.Domain\NKF.Domain.csproj" />
-      <ProjectReference Include="..\..\NKF.Persistence.Base\NKF.Persistence.Base.csproj" />
+      <ProjectReference Include="..\NKF.Domain\NKF.Domain.csproj" />
       <ProjectReference Include="..\NKF.Persistence.Base\NKF.Persistence.Base.csproj" />
     </ItemGroup>
 
