@@ -1,7 +1,7 @@
 # NKF (Nikravesh Framework)
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)]()
 [![NuGet](https://img.shields.io/badge/NuGet-Available-blue?logo=nuget)]()
 
@@ -602,7 +602,7 @@ Key patterns showcased:
 
 ## 📄 License
 
-Distributed under the **MIT License**. See `LICENSE` for more information.
+Distributed under the **Apache License 2.0**. See `LICENSE` for more information.
 
 ---
 
