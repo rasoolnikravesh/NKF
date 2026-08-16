@@ -141,7 +141,7 @@ Reference the framework projects in your solution:
 
 ## 🧩 Building a Service with NKF
 
-Let's walk through creating a **Brand** aggregate (from the reference `BaseData` service).
+Let's walk through creating a **Brand** aggregate (illustrative example from the companion `BaseData` reference service).
 
 ### 1. Domain Layer
 
@@ -393,6 +393,129 @@ entity.SetDeleted(userId);   // Soft delete
 
 ---
 
+### Repository Collection & Auto-Discovery
+
+NKF uses a **RepositoryCollection** pattern for lazy, type-safe repository resolution. Instead of registering each repository individually in DI, you register a collection that maps aggregate interfaces to implementations.
+
+#### How It Works
+
+```csharp
+// NKF.Persistence.Base/RepositoryCollection/
+├── RepositoryCollection.cs        // Thread-safe collection of RepositoryDescriptor
+├── RepositoryDescriptor.cs        // Maps RepositoryType -> ImplementationType/Instance
+├── RepositoryCollectionExtensions.cs // Fluent API: Add<T>(), AddFromAssembly()
+└── IRepositoryCollection.cs       // IList<RepositoryDescriptor> + IDisposable
+```
+
+#### Auto-Discovery with `AddFromAssembly`
+
+Register all repositories in an assembly by convention:
+
+```csharp
+// In your Persistence.Settings/DependContainer.cs
+private static readonly RepositoryCollection CommandCollection = [];
+private static readonly RepositoryCollection QueryCollection = [];
+
+static DependContainer()
+{
+    // Scans assembly for I*CommandRepository<T> and matches to *CommandRepository<T>
+    CommandCollection.AddFromAssembly(
+        typeof(ICategoryCommandRepository),  // Any interface in target assembly
+        typeof(CategoryCommandRepository)    // Any implementation in impl assembly
+    );
+    
+    QueryCollection.AddFromAssembly(
+        typeof(ICategoryQueryRepository),
+        typeof(CategoryQueryRepository)
+    );
+}
+```
+
+**Convention**: For aggregate `T`, it finds:
+- `I{Name}CommandRepository<T>` → `{Name}CommandRepository<T>`
+- `I{Name}QueryRepository<T>` → `{Name}QueryRepository<T>`
+
+#### Manual Registration
+
+```csharp
+// Explicit registration
+CommandCollection.Add<IBrandCommandRepository, BrandCommandRepository>();
+CommandCollection.Add<ICategoryCommandRepository, CategoryCommandRepository>();
+
+// Or with factory
+CommandCollection.Add<IBrandCommandRepository>(sp => 
+    new BrandCommandRepository(sp.GetRequiredService<AppDbContext>()));
+```
+
+#### Usage in Unit of Work
+
+The `CommandUnitOfWork` resolves repositories **on-demand** via `GetCommandRepository<T>()`:
+
+```csharp
+// NKF.Persistence.Postgres.Base/SeedWorks/CommandUnitOfWork.cs
+public ICommandRepository<T> GetCommandRepository<T>() where T : class, IAggregateRoot
+    => DescriptorImplementationInstance<T>(typeof(T));
+
+// In handler:
+public async Task<Result<BrandCreatedResponse>> Handle(CreateBrandCommand request, CancellationToken ct)
+{
+    var brandRepo = _unitOfWork.GetCommandRepository<Brand>(); // Auto-resolved!
+    await brandRepo.AddAsync(brand, ct);
+    await _unitOfWork.SaveAsync(ct);
+}
+```
+
+**Key behaviors:**
+- **Lazy instantiation**: Repository created on first request
+- **Scoped lifecycle**: Instance cached in collection for request duration
+- **Type-safe**: Returns `ICommandRepository<T>` not `object`
+- **Fails fast**: Throws `InvalidOperationException` if not registered
+
+#### DI Registration
+
+Pass a **deep copy** per request to isolate collections:
+
+```csharp
+// In DependContainer.AddUnitOfWork()
+services.AddScoped<ICommandUnitOfWork, CommandUnitOfWork>(s =>
+{
+    var context = s.GetRequiredService<AppDbContext>();
+    var mediator = s.GetRequiredService<IMediator>();
+    return new CommandUnitOfWork(context, CommandCollection.DeepCopy(), mediator);
+});
+
+services.AddScoped<IQueryUnitOfWork, QueryUnitOfWork>(s =>
+{
+    var context = s.GetRequiredService<AppDbContext>();
+    return new QueryUnitOfWork(context, QueryCollection.DeepCopy());
+});
+```
+
+#### Custom Repository Interfaces
+
+Define aggregate-specific contracts:
+
+```csharp
+// Contracts
+public interface IBrandCommandRepository : ICommandRepository<Brand>
+{
+    Task<bool> HasExistBrandByName(BrandName name, CancellationToken ct);
+}
+
+// Implementation
+public class BrandCommandRepository : CommandRepository<Brand>, IBrandCommandRepository
+{
+    public BrandCommandRepository(AppDbContext context) : base(context) { }
+    
+    public Task<bool> HasExistBrandByName(BrandName name, CancellationToken ct)
+        => Context.Set<Brand>().AnyAsync(b => b.DefaultName == name, ct);
+}
+```
+
+The auto-discovery will match `IBrandCommandRepository` → `BrandCommandRepository` automatically.
+
+---
+
 ## 🧪 Testing
 
 Domain logic is pure and easily testable:
@@ -439,9 +562,9 @@ dotnet test NKF.Domain.Tests/NKF.Domain.Tests.csproj
 
 ---
 
-## 📚 Reference Implementation: BaseData Service
+## 📚 Reference Implementation
 
-The `src/Services/BaseData` directory contains a **complete, production-ready example** of a service built with NKF:
+The code examples throughout this README are drawn from a **companion service** (`BaseData`) that demonstrates NKF in a real-world scenario. That service lives in a separate repository and includes:
 
 | Module | Description |
 |--------|-------------|
@@ -451,12 +574,13 @@ The `src/Services/BaseData` directory contains a **complete, production-ready ex
 | **Persistence.Postgres** | EF Core mappings, repositories, migrations |
 | **Api** | Controllers, Swagger, Middleware, DI configuration |
 
-Explore it to see:
+Key patterns showcased:
 - Multi-language support (translations)
 - Hierarchical categories (self-referencing)
 - Party/Organization unit modeling
 - Product with variants & attributes
 
+> **Note**: The `BaseData` service is not included in this framework repository. It serves as a reference implementation only.
 ---
 
 ## 🤝 Contributing
