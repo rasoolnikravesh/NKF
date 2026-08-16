@@ -8,6 +8,8 @@
         <Version>1.0.0</Version>
         <Authors>Rasool Nikravesh</Authors>
         <Description>NKF Domain Framework</Description>
+        <RepositoryUrl>https://github.com/rasoolnikravesh/NKF</RepositoryUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     </PropertyGroup>
 
