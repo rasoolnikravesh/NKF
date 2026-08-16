@@ -618,9 +618,9 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/your-org/NKP/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/NKP/discussions)
-- **Email**: support@nikravesh.dev
+- **Issues**: [GitHub Issues](https://github.com/rasolnikravesh/NKP/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/rasoolnikravesh/NKP/discussions)
+- **Email**: nikravesh.rasool@gmail.com
 
 ---
 
