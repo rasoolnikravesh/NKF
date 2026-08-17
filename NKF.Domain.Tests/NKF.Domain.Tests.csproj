@@ -6,21 +6,19 @@
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <PackageId>NKF.Domain.Tests</PackageId>
-        <Version>1.0.0</Version>
-        <Authors>Rasool Nikravesh</Authors>
-        <Description>NKF Domain Tests Framework</Description>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Description>NKF Domain Tests Framework - Unit tests for domain primitives</Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="coverlet.collector" Version="10.0.1">
+        <PackageReference Include="coverlet.collector" Version="[10.0.0, 11.0.0)">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="FluentAssertions" Version="8.10.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
-        <PackageReference Include="xunit" Version="2.9.3"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4"/>
+        <PackageReference Include="FluentAssertions" Version="[8.0.0, 9.0.0)" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="[18.0.0, 19.0.0)" />
+        <PackageReference Include="xunit" Version="[2.9.0, 3.0.0)" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="[3.0.0, 4.0.0)" />
     </ItemGroup>
 
     <ItemGroup>
@@ -29,6 +27,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\NKF.Domain\NKF.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>
