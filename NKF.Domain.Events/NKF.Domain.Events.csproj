@@ -5,16 +5,16 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>NKF.Domain.Events</PackageId>
-        <Version>1.0.0</Version>
-        <Authors>Rasool Nikravesh</Authors>
-        <Description>NKF Domain Events Framework</Description>
-        <RepositoryUrl>https://github.com/rasoolnikravesh/NKF</RepositoryUrl>
-        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Description>NKF Domain Events Framework - IDomainEvent marker interface for domain-driven design</Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MediatR" Version="14.1.0" />
+        <PackageReference Include="MediatR" Version="[14.0.0, 15.0.0)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>

@@ -5,12 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>NKF.Resources</PackageId>
-        <Version>1.0.0</Version>
-        <Authors>Rasool Nikravesh</Authors>
-        <Description>NKF Resources Framework</Description>
-        <RepositoryUrl>https://github.com/rasoolnikravesh/NKF</RepositoryUrl>
-        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Description>NKF Resources Framework - Shared resources (DataDictionary, ErrorMessages, Validations) for localization</Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <IncludeSymbols>false</IncludeSymbols>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,7 +21,7 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>FrameWorkValidations.resx</DependentUpon>
       </Compile>
-      
+
       <Compile Update="FrameWorkDataDictionary.Designer.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
@@ -45,6 +42,10 @@
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>DataDictionary.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>

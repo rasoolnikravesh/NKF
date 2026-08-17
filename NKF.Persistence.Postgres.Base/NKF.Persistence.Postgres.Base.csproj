@@ -5,12 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>NKF.Persistence.Postgres.Base</PackageId>
-        <Version>1.0.0</Version>
-        <Authors>Rasool Nikravesh</Authors>
-        <Description>NKF Persistence PostgreSQL Base Framework</Description>
-        <RepositoryUrl>https://github.com/rasoolnikravesh/NKF</RepositoryUrl>
-        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Description>NKF Persistence PostgreSQL Base Framework - EF Core PostgreSQL implementation with Command/Query repositories, Unit of Work, Tenant services</Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,8 +15,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
-      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[10.0.0, 11.0.0)" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="[10.0.0, 11.0.0)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>
