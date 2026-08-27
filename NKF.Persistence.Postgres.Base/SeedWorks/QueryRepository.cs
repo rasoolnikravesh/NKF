@@ -11,15 +11,32 @@ public class QueryRepository<TEntity> : IQueryRepository<TEntity> where TEntity 
 
     public DbSet<TEntity> Collection { get; }
 
-    public QueryRepository(DbContext context)
+    protected TenantContext? TenantContext;
+
+    public QueryRepository(DbContext context, TenantContext? tenantContext = null)
     {
         Context = context;
+        TenantContext = tenantContext;
         Collection = context.Set<TEntity>(typeof(TEntity).Name);
+    }
+
+    private void PopulateTenantId(TEntity entity)
+    {
+        if (TenantContext == null || TenantContext.TenantId == Guid.Empty) return;
+        if (entity is ITenantAware e) e.AssignTenantId(TenantContext.TenantId);
+    }
+
+    private void PopulateTenantId(IEnumerable<TEntity> entities)
+    {
+        if (TenantContext == null || TenantContext.TenantId == Guid.Empty) return;
+        foreach (var e in entities)
+            if (e is ITenantAware ie) ie.AssignTenantId(TenantContext.TenantId);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         List<TEntity> result = await Collection.ToListAsync(cancellationToken);
+        PopulateTenantId(result);
         return result;
     }
 
@@ -45,6 +62,7 @@ public class QueryRepository<TEntity> : IQueryRepository<TEntity> where TEntity 
         CancellationToken cancellationToken = default)
     {
         List<TEntity> result = await Collection.Where(predicate).ToListAsync(cancellationToken);
+        PopulateTenantId(result);
         return result;
     }
 
@@ -55,12 +73,14 @@ public class QueryRepository<TEntity> : IQueryRepository<TEntity> where TEntity 
         var lists = await Collection.Where(predicate)
             .Include(include)
             .ToListAsync(cancellationToken);
+        PopulateTenantId(lists);
         return lists;
     }
 
     public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         TEntity? result = await Collection.Where(x => x.Id == id).SingleOrDefaultAsync(cancellationToken);
+        if (result != null) PopulateTenantId(result);
         return result;
     }
 

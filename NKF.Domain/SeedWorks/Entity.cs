@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 using System.Reflection;
 using FluentResults;
@@ -6,7 +7,7 @@ using NKF.Domain.SharedKernels.ValueObjects;
 
 namespace NKF.Domain.SeedWorks;
 
-public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T> where T : Entity<T>
+public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITenantAware where T : Entity<T>
 {
     #region Feilds
 
@@ -22,6 +23,9 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T> wher
 
     public bool IsDeleted { get; protected set; }
     public Guid? DeletedByUserId { get; protected set; }
+
+    [NotMapped]
+    public Guid TenantId { get; protected set; }
 
     #endregion
 
@@ -94,8 +98,19 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T> wher
         target.UpdatedByUserId = UpdatedByUserId;
         target.OwnedByUserId = OwnedByUserId;
         target.IsDeleted = IsDeleted;
-        
+        target.TenantId = TenantId;
     }
+
+    protected void SetTenantId(Guid tenantId)
+    {
+        if (tenantId != Guid.Empty)
+            TenantId = tenantId;
+    }
+
+    /// <summary>
+    /// برای استفاده در لایه Persistence بعد از کوئری - به صورت NotMapped ست می‌شود
+    /// </summary>
+    public void AssignTenantId(Guid tenantId) => SetTenantId(tenantId);
 
     public override bool Equals(object? anotherObject)
     {
