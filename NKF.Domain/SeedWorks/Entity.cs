@@ -99,12 +99,11 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T> wher
 
     public override bool Equals(object? anotherObject)
     {
-        switch (anotherObject)
-        {
-            case null:
-            case Entity<T>:
-                return false;
-        }
+        if (anotherObject == null)
+            return false;
+
+        if (anotherObject is not Entity<T>)
+            return false;
 
         if (ReferenceEquals(this, anotherObject))
             return true;

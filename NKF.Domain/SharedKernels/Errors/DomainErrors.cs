@@ -44,6 +44,13 @@ public static class DomainErrors
         return error;
     }
 
+    public static IError Duplicate(string fieldName, string displayName)
+    {
+        var message = string.Format(FramWorkErrorMessages.DuplicateValue, displayName);
+        var error = CreateError(fieldName, displayName, message, "Duplicate");
+        return error;
+    }
+
     public static IError MustBeDifferent(string filedName, string displayName, string otherFiledName,
         string otherDisplayName)
     {
