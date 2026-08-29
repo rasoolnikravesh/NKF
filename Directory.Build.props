@@ -24,7 +24,7 @@
     <DebugSymbols>true</DebugSymbols>
 
     <!-- Versioning (MinVer - auto from git tags) -->
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
 
     <!-- Common Build -->
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>

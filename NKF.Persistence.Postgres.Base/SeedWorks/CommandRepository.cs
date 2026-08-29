@@ -10,20 +10,29 @@ public class CommandRepository<TEntity> : ICommandRepository<TEntity> where TEnt
 {
     protected DbContext Context { get; }
     protected DbSet<TEntity> Collection { get; private set; }
+    protected TenantContext? TenantContext;
 
-    public CommandRepository(DbContext context)
+    public CommandRepository(DbContext context, TenantContext? tenantContext = null)
     {
         Context =
             context ??
             throw new ArgumentNullException(paramName: nameof(context));
 
+        TenantContext = tenantContext;
         Collection = context.Set<TEntity>();
+    }
+
+    private void PopulateTenantId(TEntity entity)
+    {
+        if (TenantContext == null || TenantContext.TenantId == Guid.Empty) return;
+        if (entity is ITenantAware e) e.AssignTenantId(TenantContext.TenantId);
     }
 
     public virtual async Task<Result> AddAsync(TEntity entity, CancellationToken cancellationToken)
     {
         try
         {
+            PopulateTenantId(entity);
             await Collection.AddAsync(entity, cancellationToken);
             return Result.Ok();
         }

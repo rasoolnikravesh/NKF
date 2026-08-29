@@ -32,10 +32,12 @@ Built for teams who want **structure without ceremony** — start modeling your 
 ├─────────────────┼─────────────────┼─────────────────────────────┤
 │ • AggregateRoot │ • ICommand      │ • IRepository<T>            │
 │ • Entity<T>     │ • IQuery<T>     │ • ICommandRepository<T>     │
-│ • ValueObject   │ • ICommandHandler│ • IQueryRepository<T>      │
-│ • IDomainEvent  │ • IQueryHandler │ • IUnitOfWork               │
-│ • Domain Events │ • MediatR       │ • EF Core (PostgreSQL)      │
-│ • Enumerations  │ • Pipeline      │ • Multi-tenancy             │
+│ • TypedEntity   │ • ICommandHandler│ • IQueryRepository<T>      │
+│ • EntityId      │ • IQueryHandler │ • ITypedCommandRepository   │
+│ • ValueObject   │ • MediatR       │ • ITypedQueryRepository     │
+│ • IDomainEvent  │ • Pipeline      │ • IUnitOfWork               │
+│ • ITenantAware  │                 │ • EF Core (PostgreSQL)      │
+│ • Enumerations  │                 │ • Multi-tenancy             │
 └─────────────────┴─────────────────┴─────────────────────────────┘
 ```
 
@@ -57,12 +59,21 @@ Built for teams who want **structure without ceremony** — start modeling your 
 src/FrameWork/
 ├── NKF.Domain                 # Core domain primitives
 │   ├── SeedWorks/
-│   │   ├── AggregateRoot.cs   # Event-sourced aggregate base
-│   │   ├── Entity.cs          # Base entity with auditing
-│   │   ├── ValueObject.cs     # Immutable value equality
-│   │   ├── Enumeration.cs     # Type-safe enums
-│   │   └── IDomainEvent.cs    # Domain event marker
-│   └── SharedKernels/         # Cross-domain value objects
+│   │   ├── AggregateRoot.cs         # Event-sourced aggregate base
+│   │   ├── TypedAggregateRoot.cs    # Strongly-typed aggregate base (TypedEntity<T,TId>)
+│   │   ├── Entity.cs                # Base entity with auditing + TenantId
+│   │   ├── TypedEntity.cs           # Strongly-typed entity with EntityId
+│   │   ├── EntityId.cs              # Strongly-typed ID ValueObject (wraps Guid)
+│   │   ├── EntityIdJsonConverter.cs # JSON converter for EntityId
+│   │   ├── ITenantAware.cs          # Tenant-aware marker (TenantId + AssignTenantId)
+│   │   ├── IEntity.cs               # IEntity + IEntity<TId>
+│   │   ├── ValueObject.cs           # Immutable value equality
+│   │   ├── Enumeration.cs           # Type-safe enums
+│   │   ├── DuplicateContext.cs      # Deep-clone context with typed MapId/GetMappedId<TId>
+│   │   └── IDomainEvent.cs          # Domain event marker
+│   └── SharedKernels/
+│       ├── ValueObjects/      # CreateDate, UpdateDate
+│       └── Errors/DomainErrors.cs # DomainErrors.Duplicate
 │
 ├── NKF.Domain.Events          # IDomainEvent interface
 │
@@ -79,16 +90,25 @@ src/FrameWork/
 │   ├── IRepository.cs         # Read repository
 │   ├── ICommandRepository.cs  # Write repository
 │   ├── IQueryRepository.cs    # Read-only repository
+│   ├── ITypedCommandRepository.cs # Strongly-typed write repository
+│   ├── ITypedQueryRepository.cs   # Strongly-typed read repository
 │   ├── IUnitOfWork.cs         # Transaction boundary
+│   ├── RepositoryCollection/  # Auto-discovery for repositories
 │   └── TenantContext.cs       # Multi-tenancy support
 │
 ├── NKF.Persistence.Postgres.Base  # EF Core PostgreSQL implementation
-│   ├── SeedWorks/             # Command/Query repositories
+│   ├── SeedWorks/
+│   │   ├── CommandRepository.cs       # EF Core write repository (auto TenantId)
+│   │   ├── QueryRepository.cs         # EF Core read repository (auto TenantId)
+│   │   ├── TypedCommandRepository.cs  # EF Core typed write repository
+│   │   ├── TypedQueryRepository.cs    # EF Core typed read repository
+│   │   ├── CommandUnitOfWork.cs       # Transaction + TenantId propagation
+│   │   └── QueryUnitOfWork.cs         # Read-only UoW + TenantId propagation
 │   └── Services/              # Tenant services
 │
 ├── NKF.Resources              # Shared resources
 │   ├── DataDictionary.resx    # Localized entity/property names
-│   └── Messages/              # Validation/error messages
+│   └── Messages/              # Validation/error messages (DuplicateValue)
 │
 └── NKF.Domain.Tests           # Domain layer unit tests
 ```
@@ -374,21 +394,83 @@ app.UseMiddleware<TenantMiddleware>();
 string error = string.Format(ErrorMessages.DuplicateValue, DataDictionary.BrandName, name);
 ```
 
-### Auditing & Soft Delete (Built into Entity)
+### Auditing, Soft Delete & Multi-Tenancy (Built into Entity)
 
 ```csharp
-// Automatic fields on every Entity:
-public Guid Id { get; }
+// Automatic fields on every Entity / TypedEntity<T,TId>:
+public Guid Id { get; } // or TId Id for TypedEntity
 public Guid? CreatedByUserId { get; }
 public CreateDate CreatedDateTime { get; }
 public Guid? UpdatedByUserId { get; }
 public UpdateDate UpdatedDateTime { get; }
 public bool IsDeleted { get; }
 public Guid? DeletedByUserId { get; }
+[NotMapped] public Guid TenantId { get; } // ITenantAware
 
 // Usage:
 entity.SetUpdated(userId);   // Sets UpdatedBy/UpdatedDate
 entity.SetDeleted(userId);   // Soft delete
+entity.AssignTenantId(tenantId); // Set by persistence layer after query (NotMapped)
+
+// Equality is by Id + type (proxy-aware), transient (Guid.Empty / EntityId.Empty) uses reference equality
+```
+
+### Strongly-Typed IDs & Typed Entities (New in 1.0.1)
+
+Avoid primitive obsession with `EntityId` and generic bases:
+
+```csharp
+// 1. Define a typed ID (ValueObject wrapping Guid)
+public sealed class BrandId : EntityId
+{
+    private BrandId(Guid value) : base(value) { }
+    public static Result<BrandId> Create(Guid? value)
+    {
+        if (!value.HasValue || value.Value == Guid.Empty) return Result.Fail("BrandId is required");
+        return Result.Ok(new BrandId(value.Value));
+    }
+    public static Result<BrandId> Create(Guid value) => Create((Guid?)value);
+    public static BrandId New() => new(Guid.NewGuid());
+}
+
+// 2. Typed entity / aggregate
+public class Brand : TypedAggregateRoot<Brand, BrandId>
+{
+    public BrandName Name { get; private set; }
+    private Brand() { } // EF
+    private Brand(BrandId id, BrandName name, Guid userId) : base(id, userId) => Name = name;
+
+    public static async Task<Result<Brand>> CreateAsync(string? name, Guid userId)
+    {
+        var nameResult = BrandName.Create(name);
+        if (nameResult.IsFailed) return Result.Fail(nameResult.Errors);
+        var brand = new Brand(BrandId.New(), nameResult.Value, userId);
+        return await brand.ApplyEventAsync<Brand>(new BrandCreatedEvent(brand.Id, brand.Name.Name));
+    }
+    public Result<Brand> Apply(BrandCreatedEvent @event) { Name = BrandName.Create(@event.Name).Value; return Result.Ok(this); }
+    protected override Brand CreateDuplicateInstance() => new Brand();
+}
+
+// 3. JSON support
+services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new EntityIdJsonConverter<BrandId>()));
+// Serialized as "3fa85f64-5717-4562-b3fc-2c963f66afa6", deserialized via BrandId.Create(Guid)
+
+// 4. Typed repositories
+public interface IBrandCommandRepository : ITypedCommandRepository<Brand, BrandId> { Task<bool> Exists(BrandName n, CancellationToken ct); }
+public class BrandCommandRepository(AppDbContext ctx) : TypedCommandRepository<Brand, BrandId>(ctx), IBrandCommandRepository
+{
+    public Task<bool> Exists(BrandName n, CancellationToken ct) => Context.Set<Brand>().AnyAsync(b => b.Name == n, ct);
+}
+// Auto-discovery works for typed repos as well
+CommandCollection.AddFromAssembly(typeof(IBrandCommandRepository), typeof(BrandCommandRepository));
+
+// 5. Deep clone with ID remapping
+var ctx = new DuplicateContext();
+var clone = brand.Duplicate(ctx); // new BrandId, typed MapId/GetMappedId<TId> handles remapping
+var mapped = ctx.GetMappedId<BrandId>(originalId);
+
+// 6. Duplicate error helper
+return Result.Fail(DomainErrors.Duplicate(nameof(Brand), DataDictionary.Brand));
 ```
 
 ---
@@ -470,6 +552,10 @@ public async Task<Result<BrandCreatedResponse>> Handle(CreateBrandCommand reques
 - **Scoped lifecycle**: Instance cached in collection for request duration
 - **Type-safe**: Returns `ICommandRepository<T>` not `object`
 - **Fails fast**: Throws `InvalidOperationException` if not registered
+
+#### TenantId Propagation (New in 1.0.1)
+
+`Entity<T>` and `TypedEntity<T,TId>` implement `ITenantAware` (`TenantId [NotMapped]` + `AssignTenantId`). `CommandRepository`/`QueryRepository` and `TypedCommandRepository`/`TypedQueryRepository` auto-assign `TenantId` on `Add/Attach/Update/Query` via `TenantContext`/`ITenantProvider`. Populated in `CommandUnitOfWork`/`QueryUnitOfWork` from the current scope — no manual mapping needed.
 
 #### DI Registration
 

@@ -6,10 +6,11 @@ using NKF.Persistence.Base.RepositoryCollection;
 
 namespace NKF.Persistence.Postgres.Base.SeedWorks;
 
-public class QueryUnitOfWork(DbContext context, IRepositoryCollection repositoryCollection)
+public class QueryUnitOfWork(DbContext context, IRepositoryCollection repositoryCollection, TenantContext? tenantContext = null)
     : FUnitOfWork(repositoryCollection), IQueryUnitOfWork
 {
     private DbContext Context { get; } = context;
+    private TenantContext? TenantContext { get; } = tenantContext;
 
     public IQueryRepository<T> GetQueryRepository<T>() where T : class, IAggregateRoot
     {
@@ -47,21 +48,55 @@ public class QueryUnitOfWork(DbContext context, IRepositoryCollection repository
 
     private object CreateRepositoryInstance(Type implementationType)
     {
-        var contextType = Context.GetType(); // نوع واقعی Context
+        var contextType = Context.GetType();
+
+        // ابتدا سازنده با (DbContext, TenantContext) را امتحان کن
+        var ctorWithTenant = implementationType.GetConstructor(new[] { contextType, typeof(TenantContext) });
+        if (ctorWithTenant != null)
+        {
+            var ctxParam = Expression.Parameter(typeof(object), "context");
+            var tenantParam = Expression.Parameter(typeof(object), "tenantContext");
+            var convertedCtx = Expression.Convert(ctxParam, contextType);
+            var convertedTenant = Expression.Convert(tenantParam, typeof(TenantContext));
+            var newExpr = Expression.New(ctorWithTenant, convertedCtx, convertedTenant);
+            var convertedResult = Expression.Convert(newExpr, typeof(object));
+            Expression<Func<object, object, object>> lambda = Expression.Lambda<Func<object, object, object>>(convertedResult, ctxParam, tenantParam);
+            Func<object, object, object> factory = lambda.Compile();
+            return factory(Context, TenantContext!);
+        }
+
         var constructor = implementationType.GetConstructor(new[] { contextType });
         if (constructor == null)
             throw new InvalidOperationException(
                 $"Type {implementationType.Name} does not have a constructor accepting {contextType.Name}.");
 
-        // ساخت Expression برای فراخوانی سازنده
         var param = Expression.Parameter(typeof(object), "context");
-        var convertedParam = Expression.Convert(param, contextType); // تبدیل object به contextType
-        var newExpr = Expression.New(constructor, convertedParam);
-        var convertedResult = Expression.Convert(newExpr, typeof(object)); // تبدیل نتیجه به object
-        Expression<Func<object, object>> lambda = Expression.Lambda<Func<object, object>>(convertedResult, param);
-        Func<object, object> factory = lambda.Compile(); // ساخت delegate
+        var convertedParam = Expression.Convert(param, contextType);
+        var newExpr2 = Expression.New(constructor, convertedParam);
+        var convertedResult2 = Expression.Convert(newExpr2, typeof(object));
+        Expression<Func<object, object>> lambda2 = Expression.Lambda<Func<object, object>>(convertedResult2, param);
+        Func<object, object> factory2 = lambda2.Compile();
 
-        object instance = factory(Context);
+        object instance = factory2(Context);
+        // اگر ریپازیتوری base دارای TenantContext به صورت property/field باشد با reflection ست کن (برای backward compatibility)
+        if (TenantContext != null)
+        {
+            var field = implementationType.GetField("_tenantContext", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
+            // تلاش برای ست کردن فیلد TenantContext در base class
+            var baseType = implementationType.BaseType;
+            while (baseType != null && field == null)
+            {
+                field = baseType.GetField("TenantContext", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                if (field == null)
+                    field = baseType.GetField("_tenantContext", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                baseType = baseType.BaseType;
+            }
+            if (field != null)
+            {
+                // نمونه ساخته شده را اگر قبلاً TenantContext نداشت، ست کن
+                try { field.SetValue(instance, TenantContext); } catch { }
+            }
+        }
 
         return instance;
     }

@@ -4,10 +4,12 @@ EF Core PostgreSQL implementation for NKF Persistence.
 
 ## Features
 
-- **CommandRepository<T>** — EF Core write repository base
-- **QueryRepository<T>** — EF Core read repository base
-- **CommandUnitOfWork** — Transaction management with MediatR for domain events
-- **QueryUnitOfWork** — Read-only unit of work
+- **CommandRepository<T>** — EF Core write repository base (auto-assigns `ITenantAware.TenantId`)
+- **QueryRepository<T>** — EF Core read repository base (auto-assigns `ITenantAware.TenantId`)
+- **TypedCommandRepository<TEntity,TId>** — EF Core typed write repository base (1.0.1)
+- **TypedQueryRepository<TEntity,TId>** — EF Core typed read repository base (1.0.1)
+- **CommandUnitOfWork** — Transaction management with MediatR for domain events + `TenantId` propagation
+- **QueryUnitOfWork** — Read-only unit of work + `TenantId` propagation
 - **Tenant Services** — Multi-tenancy with connection resolution
 - **FAppDbContext** — Base DbContext with tenant support
 
@@ -28,13 +30,22 @@ public class BrandCommandRepository : CommandRepository<Brand>, IBrandCommandRep
         => Context.Set<Brand>().AnyAsync(b => b.DefaultName == name, ct);
 }
 
-// DI Registration
+// Typed (1.0.1)
+public class TypedBrandCommandRepository : TypedCommandRepository<TypedBrand, BrandId>, ITypedBrandCommandRepository
+{
+    public TypedBrandCommandRepository(AppDbContext context) : base(context) { }
+    public Task<bool> HasExistBrandByName(BrandName name, CancellationToken ct)
+        => Context.Set<TypedBrand>().AnyAsync(b => b.DefaultName == name, ct);
+}
+
+// DI Registration (TenantId propagated automatically)
 services.AddScoped<ICommandUnitOfWork, CommandUnitOfWork>(s =>
     new CommandUnitOfWork(
         s.GetRequiredService<AppDbContext>(),
         CommandCollection.DeepCopy(),
         s.GetRequiredService<IMediator>()
     ));
+// Typed repos share the same CommandCollection / QueryCollection via AddFromAssembly
 ```
 
 ## Repository
