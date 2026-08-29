@@ -5,8 +5,9 @@ Shared resources: DataDictionary and localized messages.
 ## Features
 
 - **DataDictionary** — Localized entity/property names for UI
-- **ErrorMessages** — Validation error messages with formatting
-- **Validations** — Business rule validation messages
+- **ErrorMessages / FramWorkErrorMessages** — Validation error messages with formatting (`DuplicateValue`)
+- **Validations / FrameWorkValidations** — Business rule validation messages (`Required`, `MaxLength`, etc.)
+- **DomainErrors.Duplicate** — Helper in `NKF.Domain` consuming `FramWorkErrorMessages.DuplicateValue` (1.0.1)
 
 ## Install
 
@@ -17,12 +18,16 @@ dotnet add package NKF.Resources
 ## Usage
 
 ```csharp
-// In domain
-string error = string.Format(ErrorMessages.DuplicateValue, DataDictionary.BrandName, name);
+// In domain (via DomainErrors helper, 1.0.1)
+IError error = DomainErrors.Duplicate(nameof(Brand), DataDictionary.Brand);
+return Result.Fail(error);
+// Or raw
+string msg = string.Format(FramWorkErrorMessages.DuplicateValue, DataDictionary.BrandName);
 
 // Resources are embedded and accessible via:
 // NKF.Resources.DataDictionary.BrandName
-// NKF.Resources.Messages.ErrorMessages.DuplicateValue
+// NKF.Resources.Messages.FramWorkErrorMessages.DuplicateValue
+// NKF.Resources.Messages.FrameWorkValidations.Required
 ```
 
 ## Repository

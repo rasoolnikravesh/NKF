@@ -57,6 +57,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2026-08-29
+
+### Added
+- **NKF.Domain - TenantId**: Added `ITenantAware` interface and `TenantId` (`[NotMapped]`, protected setter) to `Entity<T>` and `TypedEntity<T,TId>` with `AssignTenantId()` for persistence-layer assignment
+- **NKF.Domain - Typed IDs**: New strongly-typed identity hierarchy - `EntityId` (ValueObject, wraps Guid), `IEntity<TId>`, `TypedEntity<T,TId>`, `TypedAggregateRoot<T,TId>`, `ITypedEntity<TId>`, `ITypedAggregateRoot<TId>`, and `EntityIdJsonConverter<TId>` for JSON serialization
+- **NKF.Domain - DuplicateContext**: Added typed overloads `MapId(EntityId, EntityId)` and `GetMappedId<TId>(TId)` with reflection-based `TId.Create(Guid)` resolution for deep-clone scenarios
+- **NKF.Domain - Errors**: Added `DomainErrors.Duplicate(fieldName, displayName)` using `FramWorkErrorMessages.DuplicateValue`
+- **NKF.Persistence.Base**: New `ITypedCommandRepository<TEntity,TId>` and `ITypedQueryRepository<TEntity,TId>` abstractions
+- **NKF.Persistence.Postgres.Base**: New `TypedCommandRepository<TEntity,TId>` and `TypedQueryRepository<TEntity,TId>` EF Core implementations; `CommandRepository`/`QueryRepository` and `CommandUnitOfWork`/`QueryUnitOfWork` now auto-propagate `TenantId` via `ITenantAware`
+
+### Fixed
+- **NKF.Domain - Entity equality**: Fixed `Entity<T>.Equals()` null/type checks and `GetHashCode()` handling for transient entities (Guid.Empty) vs proxy types
+
+---
+
 ## [Unreleased]
 
 ### Planned
