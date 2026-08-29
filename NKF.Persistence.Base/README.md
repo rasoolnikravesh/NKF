@@ -7,9 +7,11 @@ Persistence abstractions: Repository pattern, Unit of Work, and multi-tenancy.
 - **IRepository<T>** — Read repository
 - **ICommandRepository<T>** — Write repository (Add, Update, Remove)
 - **IQueryRepository<T>** — Read-only repository
-- **IUnitOfWork / ICommandUnitOfWork / IQueryUnitOfWork** — Transaction boundaries
+- **ITypedCommandRepository<TEntity,TId>** — Strongly-typed write repository for `TypedAggregateRoot<T,TId>` (1.0.1)
+- **ITypedQueryRepository<TEntity,TId>** — Strongly-typed read repository for `TypedAggregateRoot<T,TId>` (1.0.1)
+- **IUnitOfWork / ICommandUnitOfWork / IQueryUnitOfWork** — Transaction boundaries with auto `TenantId` propagation
 - **RepositoryCollection** — Auto-discovery for repositories
-- **TenantContext** — Multi-tenancy support
+- **TenantContext** — Multi-tenancy support (auto-assigns `ITenantAware.TenantId`)
 
 ## Install
 
@@ -25,6 +27,12 @@ public interface IBrandCommandRepository : ICommandRepository<Brand>
     Task<bool> HasExistBrandByName(BrandName name, CancellationToken ct);
 }
 
+// Strongly-typed (1.0.1)
+public interface ITypedBrandCommandRepository : ITypedCommandRepository<TypedBrand, BrandId>
+{
+    Task<bool> HasExistBrandByName(BrandName name, CancellationToken ct);
+}
+
 // Auto-discovery registration
 CommandCollection.AddFromAssembly(
     typeof(IBrandCommandRepository),
@@ -35,6 +43,10 @@ CommandCollection.AddFromAssembly(
 var repo = _unitOfWork.GetCommandRepository<Brand>();
 await repo.AddAsync(brand, ct);
 await _unitOfWork.SaveAsync(ct);
+
+// Typed with TenantId auto-propagation (assigned by CommandUnitOfWork/QueryUnitOfWork)
+var typedRepo = _unitOfWork.GetTypedCommandRepository<TypedBrand, BrandId>();
+await typedRepo.AddAsync(typedBrand, ct); // TenantId set automatically
 ```
 
 ## Repository
