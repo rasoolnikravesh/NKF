@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -30,14 +30,17 @@ public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : Ent
     {
         return await Task.Run<Result<T>>(() =>
         {
-            if (@event == null) throw new ArgumentNullException(nameof(@event));
+            if (@event == null)
+            {
+                throw new ArgumentNullException(nameof(@event));
+            }
 
-            var aggregateType = GetType();
-            var eventType = @event.GetType();
-            var key = (aggregateType, eventType);
+            Type aggregateType = GetType();
+            Type eventType = @event.GetType();
+            (Type aggregateType, Type eventType) key = (aggregateType, eventType);
             Func<object, object, object> func = ApplyFuncS.GetOrAdd(key, k =>
             {
-                var method = aggregateType.GetMethod(
+                MethodInfo? method = aggregateType.GetMethod(
                     "Apply",
                     BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
                     null,
@@ -45,16 +48,18 @@ public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : Ent
                     null);
 
                 if (method == null)
+                {
                     throw new InvalidOperationException(
                         $"No Apply method found for event type '{eventType.Name}' in aggregate" +
                         $" '{aggregateType.Name}'.");
+                }
 
                 // پارامترهای Expression: handler (object) و event (object)
-                var handlerParam = Expression.Parameter(typeof(object), "handler");
-                var eventParam = Expression.Parameter(typeof(object), "event");
+                ParameterExpression handlerParam = Expression.Parameter(typeof(object), "handler");
+                ParameterExpression eventParam = Expression.Parameter(typeof(object), "event");
 
                 // فراخوانی متد: ((aggregateType)handler).Apply((eventType)event)
-                var callExpr = Expression.Call(
+                MethodCallExpression callExpr = Expression.Call(
                     Expression.TypeAs(handlerParam, aggregateType),
                     method,
                     Expression.TypeAs(eventParam, eventType));
@@ -84,20 +89,24 @@ public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : Ent
     protected void RaiseDomainEvent(IDomainEvent? domainEvent)
     {
         if (domainEvent is not null)
+        {
             _domainEvents.Add(domainEvent);
+        }
     }
 
     protected void RemoveDomainEvent(IDomainEvent? domainEvent)
     {
         if (domainEvent is not null)
+        {
             _domainEvents.Remove(domainEvent);
+        }
     }
 
     protected void Update_UpdatedDate()
     {
-        var update = UpdateDate.CreateUtcNow().Value;
+        UpdateDate update = UpdateDate.CreateUtcNow().Value;
         UpdatedDateTime = update;
     }
-    
-    
+
+
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 
 namespace NKF.Persistence.Base.RepositoryCollection;
 
@@ -44,7 +44,10 @@ public sealed class RepositoryCollection : IRepositoryCollection
     private void Dispose(bool disposing)
     {
         if (IsDisposed)
+        {
             return;
+        }
+
         if (disposing)
         {
             foreach (IDisposable obj in _descriptors.OfType<IDisposable>())
@@ -82,7 +85,7 @@ public sealed class RepositoryCollection : IRepositoryCollection
     public RepositoryCollection DeepCopy()
     {
         var deepCopyCompany = new RepositoryCollection();
-        foreach (var descriptor in _descriptors)
+        foreach (RepositoryDescriptor descriptor in _descriptors)
         {
             var cloned = descriptor.Clone() as RepositoryDescriptor;
             deepCopyCompany.Add(cloned!.RepositoryType, cloned.ImplementationType!);

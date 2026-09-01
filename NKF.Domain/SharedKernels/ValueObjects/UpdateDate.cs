@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using NKF.Domain.SeedWorks;
 
 namespace NKF.Domain.SharedKernels.ValueObjects;
@@ -18,7 +18,7 @@ public class UpdateDate : ValueObject
         result.WithValue(new UpdateDate() { Value = DateTime.UtcNow });
         return result;
     }
-    
+
     public static Result<UpdateDate> Create(DateTime value)
     {
         Result<UpdateDate> result = new Result<UpdateDate>();

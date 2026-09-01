@@ -1,7 +1,7 @@
-﻿namespace NKF.Persistence.Base.RepositoryCollection.Generics;
+namespace NKF.Persistence.Base.RepositoryCollection.Generics;
 
 public static class RepositoryCollectionExtensions
 {
-		
+
 
 }

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 namespace NKF.Domain.SeedWorks;
 
@@ -9,10 +9,10 @@ public abstract class Enumeration : object, IComparable
     public static IEnumerable<T> GetAll<T>() where T : Enumeration
     {
         // **************************************************
-        var result1 =
+        Type result1 =
             typeof(T);
 
-        var result2 =
+        FieldInfo[] result2 =
                 result1.GetFields
                 (BindingFlags.Public |
                  BindingFlags.Static |
@@ -25,12 +25,12 @@ public abstract class Enumeration : object, IComparable
                     .ToList()
             ;
 
-        var result4 =
+        IEnumerable<object?> result4 =
                 result3
                     .Select(current => current.GetValue(null))
             ;
 
-        var result5 =
+        IEnumerable<T> result5 =
                 result4.Cast<T>()
             ;
 
@@ -70,7 +70,7 @@ public abstract class Enumeration : object, IComparable
         (Func<TEnumeration, bool> predicate)
         where TEnumeration : Enumeration
     {
-        var matchingItem =
+        TEnumeration? matchingItem =
             GetAll<TEnumeration>()
                 .FirstOrDefault(predicate);
 
@@ -92,7 +92,7 @@ public abstract class Enumeration : object, IComparable
     {
         return TryParse
                    (item => item.Name == valueOrName, out enumeration) ||
-               int.TryParse(valueOrName, out var value) &&
+               int.TryParse(valueOrName, out int value) &&
                TryParse(item => item.Value == value, out enumeration);
     }
 
@@ -108,7 +108,7 @@ public abstract class Enumeration : object, IComparable
         //var matchingItem =
         //	Parse<TEnumeration, int>(value, "nameOrValue", item => item.Value == value);
 
-        var matchingItem =
+        TEnumeration? matchingItem =
             ParseByPredicate<TEnumeration>(item => item.Value == value);
 
         return matchingItem;

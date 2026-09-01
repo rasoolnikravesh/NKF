@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using NKF.Domain.SeedWorks;
 
 namespace NKF.Persistence.Base;
@@ -9,7 +9,7 @@ public interface IQueryRepository<TEntity> : IRepository where TEntity : IAggreg
         CancellationToken cancellationToken = default(CancellationToken));
 
     Task<IEnumerable<TEntity>> GetAllAsync(int page = 1, int pageSize = 10,
-        IDictionary<string, string> orders = default,
+        IDictionary<string, string>? orders = default,
         CancellationToken cancellationToken = default(CancellationToken));
 
     Task<bool> HasAnyByIdAsync(Guid id, CancellationToken cancellationToken = default(CancellationToken));
@@ -18,7 +18,7 @@ public interface IQueryRepository<TEntity> : IRepository where TEntity : IAggreg
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default(CancellationToken));
     Task<IEnumerable<TEntity>> GetSomeAsync(
-        Expression<Func<TEntity, bool>> predicate,Expression<Func<TEntity,object>> include,
+        Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> include,
         CancellationToken cancellationToken = default(CancellationToken));
 
     Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default(CancellationToken));

@@ -28,15 +28,21 @@ public abstract class GenericStringValueObject : ValueObject
         var result = Result.Ok();
 
         if (string.IsNullOrWhiteSpace(value))
+        {
             return result.WithError(DomainErrors.Required(fieldName, displayName));
+        }
 
         value = value.FixFormat();
 
         if (value.Length < minLength)
+        {
             return result.WithError(DomainErrors.TooShort(fieldName, displayName, minLength));
+        }
 
         if (value.Length > maxLength)
+        {
             return result.WithError(DomainErrors.TooLong(fieldName, displayName, maxLength));
+        }
 
         return result;
     }

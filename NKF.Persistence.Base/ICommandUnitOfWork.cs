@@ -1,4 +1,4 @@
-﻿using NKF.Domain.SeedWorks;
+using NKF.Domain.SeedWorks;
 
 namespace NKF.Persistence.Base;
 

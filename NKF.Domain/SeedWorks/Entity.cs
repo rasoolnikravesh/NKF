@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -47,7 +47,7 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
         CreatedByUserId = createdByUserId;
     }
 
-    
+
     #endregion /Constroctor(s)
 
 
@@ -77,7 +77,7 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
     {
         return context.GetOrAdd(this, () =>
         {
-            var copy = CreateDuplicateInstance();
+            T copy = CreateDuplicateInstance();
 
             copy.Id = Guid.NewGuid();
             context.MapId(Id, copy.Id);
@@ -93,7 +93,7 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
     protected virtual void CopyTo(T target, DuplicateContext context)
     {
         target.CreatedByUserId = CreatedByUserId;
-        target.CreatedDateTime =  CreatedDateTime;
+        target.CreatedDateTime = CreatedDateTime;
         target.UpdatedDateTime = UpdatedDateTime;
         target.UpdatedByUserId = UpdatedByUserId;
         target.OwnedByUserId = OwnedByUserId;
@@ -104,7 +104,9 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
     protected void SetTenantId(Guid tenantId)
     {
         if (tenantId != Guid.Empty)
+        {
             TenantId = tenantId;
+        }
     }
 
     /// <summary>
@@ -115,26 +117,46 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
     public override bool Equals(object? anotherObject)
     {
         if (anotherObject == null)
+        {
             return false;
+        }
 
         if (anotherObject is not Entity<T>)
+        {
             return false;
+        }
 
         if (ReferenceEquals(this, anotherObject))
+        {
             return true;
+        }
+
         Entity<T>? anotherEntity = anotherObject as Entity<T>;
         if (GetRealType() != anotherEntity?.GetRealType())
+        {
             return false;
+        }
+
         if (GetType() != anotherEntity?.GetType())
+        {
             return false;
+        }
+
         if (IsTransient() || anotherEntity.IsTransient())
+        {
             return false;
+        }
+
         return Id == anotherEntity.Id;
     }
 
     public override int GetHashCode()
     {
-        if (IsTransient()) return base.GetHashCode();
+        if (IsTransient())
+        {
+            return base.GetHashCode();
+        }
+
         _requestedHashCode ??= Id.GetHashCode();
         return _requestedHashCode.Value;
     }
@@ -148,7 +170,10 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
     public T SetUpdated(Guid updatedByUserId)
     {
         if (IsDeleted)
+        {
             return (T)this;
+        }
+
         UpdatedByUserId = updatedByUserId;
         UpdatedDateTime = UpdateDate.CreateUtcNow().Value;
 
@@ -158,7 +183,10 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
     public T SetDeleted(Guid deletedByUserId)
     {
         if (IsDeleted)
+        {
             return (T)this;
+        }
+
         IsDeleted = true;
         DeletedByUserId = deletedByUserId;
         UpdatedDateTime = UpdateDate.CreateUtcNow().Value;

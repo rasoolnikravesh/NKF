@@ -11,9 +11,11 @@ public static class Strings
     public static string FixFormat(this string str, params object[] args)
     {
         if (string.IsNullOrWhiteSpace(str))
+        {
             return string.Empty;
+        }
 
-        var normalizedValue = NormalizePersianArabicCharacters(str);
+        string normalizedValue = NormalizePersianArabicCharacters(str);
         normalizedValue = WhitespaceRegex.Replace(normalizedValue, " ").Trim();
         normalizedValue = ZwnjSpacingRegex.Replace(normalizedValue, "‌");
         return normalizedValue;

@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 
 // using JetBrains.Annotations;
 
@@ -23,7 +23,7 @@ public class SimpleResult
 public class SimpleResult<T>(bool isSucces, List<string> errors, List<string> successes)
     : SimpleResult(isSucces, errors, successes)
 {
-    public T? Value {  get; set; }
+    public T? Value { get; set; }
 }
 
 public static class SimpleResultExtentions
@@ -38,7 +38,7 @@ public static class SimpleResultExtentions
     }
 
 
-    public static SimpleResult<T> ToSimpleResult<T>(this Result<T> result) 
+    public static SimpleResult<T> ToSimpleResult<T>(this Result<T> result)
     {
         SimpleResult<T> sResult = new SimpleResult<T>(result.IsSuccess,
             [.. result.Errors.Select(x => x.Message)],

@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using NKF.Domain.SeedWorks;
 using NKF.Resources.Messages;
 

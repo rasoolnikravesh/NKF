@@ -1,4 +1,4 @@
-﻿// using NKP.Services.BaseData.Domain.SeedWorks;
+// using NKP.Services.BaseData.Domain.SeedWorks;
 //
 // namespace NKP.Services.BaseData.Domain.SharedKernels.ValueObjects
 // {

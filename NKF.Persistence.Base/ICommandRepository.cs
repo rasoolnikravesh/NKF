@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using FluentResults;
 using NKF.Domain.SeedWorks;
 
@@ -14,7 +14,7 @@ public interface ICommandRepository<TEntity> : IRepository where TEntity : IAggr
     Task<Result> UpdateAsync(TEntity entity, CancellationToken cancellationToken);
 
     Task<Result> UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken);
-    
+
 
     Task<Result> RemoveAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
 

@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using NKF.Domain.SeedWorks;
 using NKF.Persistence.Base;
@@ -22,15 +22,31 @@ public class QueryRepository<TEntity> : IQueryRepository<TEntity> where TEntity 
 
     private void PopulateTenantId(TEntity entity)
     {
-        if (TenantContext == null || TenantContext.TenantId == Guid.Empty) return;
-        if (entity is ITenantAware e) e.AssignTenantId(TenantContext.TenantId);
+        if (TenantContext == null || TenantContext.TenantId == Guid.Empty)
+        {
+            return;
+        }
+
+        if (entity is ITenantAware e)
+        {
+            e.AssignTenantId(TenantContext.TenantId);
+        }
     }
 
     private void PopulateTenantId(IEnumerable<TEntity> entities)
     {
-        if (TenantContext == null || TenantContext.TenantId == Guid.Empty) return;
-        foreach (var e in entities)
-            if (e is ITenantAware ie) ie.AssignTenantId(TenantContext.TenantId);
+        if (TenantContext == null || TenantContext.TenantId == Guid.Empty)
+        {
+            return;
+        }
+
+        foreach (TEntity e in entities)
+        {
+            if (e is ITenantAware ie)
+            {
+                ie.AssignTenantId(TenantContext.TenantId);
+            }
+        }
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -47,7 +63,7 @@ public class QueryRepository<TEntity> : IQueryRepository<TEntity> where TEntity 
     }
 
     public Task<IEnumerable<TEntity>> GetAllAsync(int page = 1, int pageSize = 10,
-        IDictionary<string, string> orders = default,
+        IDictionary<string, string>? orders = default,
         CancellationToken cancellationToken = default(CancellationToken))
     {
         throw new NotImplementedException();
@@ -70,7 +86,7 @@ public class QueryRepository<TEntity> : IQueryRepository<TEntity> where TEntity 
         Expression<Func<TEntity, object>> include,
         CancellationToken cancellationToken = default(CancellationToken))
     {
-        var lists = await Collection.Where(predicate)
+        List<TEntity> lists = await Collection.Where(predicate)
             .Include(include)
             .ToListAsync(cancellationToken);
         PopulateTenantId(lists);
@@ -80,7 +96,11 @@ public class QueryRepository<TEntity> : IQueryRepository<TEntity> where TEntity 
     public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         TEntity? result = await Collection.Where(x => x.Id == id).SingleOrDefaultAsync(cancellationToken);
-        if (result != null) PopulateTenantId(result);
+        if (result != null)
+        {
+            PopulateTenantId(result);
+        }
+
         return result;
     }
 

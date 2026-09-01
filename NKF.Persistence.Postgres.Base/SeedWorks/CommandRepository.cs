@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using NKF.Domain.SeedWorks;
@@ -24,8 +24,15 @@ public class CommandRepository<TEntity> : ICommandRepository<TEntity> where TEnt
 
     private void PopulateTenantId(TEntity entity)
     {
-        if (TenantContext == null || TenantContext.TenantId == Guid.Empty) return;
-        if (entity is ITenantAware e) e.AssignTenantId(TenantContext.TenantId);
+        if (TenantContext == null || TenantContext.TenantId == Guid.Empty)
+        {
+            return;
+        }
+
+        if (entity is ITenantAware e)
+        {
+            e.AssignTenantId(TenantContext.TenantId);
+        }
     }
 
     public virtual async Task<Result> AddAsync(TEntity entity, CancellationToken cancellationToken)
@@ -94,7 +101,7 @@ public class CommandRepository<TEntity> : ICommandRepository<TEntity> where TEnt
     {
         try
         {
-            foreach (var aggregateRoot in entities)
+            foreach (TEntity aggregateRoot in entities)
             {
                 await this.UpdateAsync(aggregateRoot, cancellationToken);
             }

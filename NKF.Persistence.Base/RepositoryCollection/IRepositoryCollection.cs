@@ -1,10 +1,10 @@
-﻿namespace NKF.Persistence.Base.RepositoryCollection;
+namespace NKF.Persistence.Base.RepositoryCollection;
 
 public interface IRepositoryCollection :
-	IList<RepositoryDescriptor>,
-	ICollection<RepositoryDescriptor>,
-	IEnumerable<RepositoryDescriptor>,
-	IDisposable
+    IList<RepositoryDescriptor>,
+    ICollection<RepositoryDescriptor>,
+    IEnumerable<RepositoryDescriptor>,
+    IDisposable
 {
 
 }

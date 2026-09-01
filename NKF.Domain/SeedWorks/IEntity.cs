@@ -1,4 +1,4 @@
-﻿namespace NKF.Domain.SeedWorks;
+namespace NKF.Domain.SeedWorks;
 
 public interface IEntity
 {

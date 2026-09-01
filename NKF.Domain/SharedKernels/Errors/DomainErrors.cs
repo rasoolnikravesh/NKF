@@ -7,22 +7,22 @@ public static class DomainErrors
 {
     public static Error Required(string fieldName, string displayName)
     {
-        var message = string.Format(FrameWorkValidations.Required, displayName);
-        var error = CreateError(fieldName, displayName, message, "Required");
+        string message = string.Format(FrameWorkValidations.Required, displayName);
+        Error error = CreateError(fieldName, displayName, message, "Required");
         return error;
     }
 
     public static Error TooShort(string fieldName, string displayName, int minLength)
     {
-        var message = string.Format(FrameWorkValidations.MinLentgh, displayName, minLength);
-        var error = CreateError(fieldName, displayName, message, "TooShort");
+        string message = string.Format(FrameWorkValidations.MinLentgh, displayName, minLength);
+        Error error = CreateError(fieldName, displayName, message, "TooShort");
         return error;
     }
 
     public static Error TooLong(string fieldName, string displayName, int maxLength)
     {
-        var message = string.Format(FrameWorkValidations.MaxLength, displayName, maxLength);
-        var error = CreateError(fieldName, displayName, message, "TooLong");
+        string message = string.Format(FrameWorkValidations.MaxLength, displayName, maxLength);
+        Error error = CreateError(fieldName, displayName, message, "TooLong");
         return error;
     }
 
@@ -30,13 +30,13 @@ public static class DomainErrors
     {
         string message = string.Format
             (FrameWorkValidations.InValidCode, displayName);
-        var error = CreateError(fieldName, displayName, message, "InValidCode");
+        Error error = CreateError(fieldName, displayName, message, "InValidCode");
         return error;
     }
 
     private static Error CreateError(string fieldName, string displayName, string message, string type)
     {
-        var error = new Error(message)
+        Error error = new Error(message)
             .WithMetadata("Code", $"{fieldName}.{type}")
             .WithMetadata("FieldName", fieldName)
             .WithMetadata("DisplayName", displayName)
@@ -46,16 +46,16 @@ public static class DomainErrors
 
     public static IError Duplicate(string fieldName, string displayName)
     {
-        var message = string.Format(FramWorkErrorMessages.DuplicateValue, displayName);
-        var error = CreateError(fieldName, displayName, message, "Duplicate");
+        string message = string.Format(FramWorkErrorMessages.DuplicateValue, displayName);
+        Error error = CreateError(fieldName, displayName, message, "Duplicate");
         return error;
     }
 
     public static IError MustBeDifferent(string filedName, string displayName, string otherFiledName,
         string otherDisplayName)
     {
-        var message = string.Format(FrameWorkValidations.MustBeDifferent, displayName, otherFiledName);
-        var error = CreateError(filedName, displayName, message, "MustBeDifferent");
+        string message = string.Format(FrameWorkValidations.MustBeDifferent, displayName, otherFiledName);
+        Error error = CreateError(filedName, displayName, message, "MustBeDifferent");
         error
             .WithMetadata("OtherFiledName", otherFiledName)
             .WithMetadata("OtherDisplayName", otherDisplayName);

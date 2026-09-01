@@ -1,4 +1,4 @@
-﻿namespace NKF.Persistence.Base;
+namespace NKF.Persistence.Base;
 
 public interface IRepository
 {

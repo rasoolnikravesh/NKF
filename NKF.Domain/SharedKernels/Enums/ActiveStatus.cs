@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using NKF.Domain.SeedWorks;
 using NKF.Resources;
 using NKF.Resources.Messages;
@@ -24,7 +24,7 @@ public class ActiveStatus : Enumeration
             return result;
         }
 
-        var activeStatus = FromValue<ActiveStatus>(value.Value);
+        ActiveStatus? activeStatus = FromValue<ActiveStatus>(value.Value);
         if (activeStatus is null)
         {
             string errorMessage = string.Format(FrameWorkValidations.InValidCode, FrameWorkDataDictionary.ActiveStatus);

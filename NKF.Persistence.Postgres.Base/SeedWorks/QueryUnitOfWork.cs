@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using NKF.Domain.SeedWorks;
 using NKF.Persistence.Base;
@@ -29,15 +30,21 @@ public class QueryUnitOfWork(DbContext context, IRepositoryCollection repository
             .FirstOrDefault(z => z.ImplementationType
                 .GetInterfaces().Any(x => x.GenericTypeArguments.Contains(type)));
         if (descriptor == null)
+        {
             throw new InvalidOperationException($"No repository found for type {typeof(T)}.");
+        }
 
         if (descriptor.ImplementationInstance is IQueryRepository<T> existingRepo)
+        {
             return existingRepo;
+        }
 
         object newInstance = CreateRepositoryInstance(descriptor.ImplementationType);
         if (newInstance is not IQueryRepository<T> repo)
+        {
             throw new InvalidOperationException(
                 $"Created instance of type {descriptor.ImplementationType.Name} does not implement IQueryRepository<{typeof(T).Name}>.");
+        }
 
         RepositoryCollection.Remove(descriptor);
         // افزودن descriptor جدید با نمونه ساخته‌شده
@@ -48,32 +55,34 @@ public class QueryUnitOfWork(DbContext context, IRepositoryCollection repository
 
     private object CreateRepositoryInstance(Type implementationType)
     {
-        var contextType = Context.GetType();
+        Type contextType = Context.GetType();
 
         // ابتدا سازنده با (DbContext, TenantContext) را امتحان کن
-        var ctorWithTenant = implementationType.GetConstructor(new[] { contextType, typeof(TenantContext) });
+        ConstructorInfo? ctorWithTenant = implementationType.GetConstructor(new[] { contextType, typeof(TenantContext) });
         if (ctorWithTenant != null)
         {
-            var ctxParam = Expression.Parameter(typeof(object), "context");
-            var tenantParam = Expression.Parameter(typeof(object), "tenantContext");
-            var convertedCtx = Expression.Convert(ctxParam, contextType);
-            var convertedTenant = Expression.Convert(tenantParam, typeof(TenantContext));
-            var newExpr = Expression.New(ctorWithTenant, convertedCtx, convertedTenant);
-            var convertedResult = Expression.Convert(newExpr, typeof(object));
+            ParameterExpression ctxParam = Expression.Parameter(typeof(object), "context");
+            ParameterExpression tenantParam = Expression.Parameter(typeof(object), "tenantContext");
+            UnaryExpression convertedCtx = Expression.Convert(ctxParam, contextType);
+            UnaryExpression convertedTenant = Expression.Convert(tenantParam, typeof(TenantContext));
+            NewExpression newExpr = Expression.New(ctorWithTenant, convertedCtx, convertedTenant);
+            UnaryExpression convertedResult = Expression.Convert(newExpr, typeof(object));
             Expression<Func<object, object, object>> lambda = Expression.Lambda<Func<object, object, object>>(convertedResult, ctxParam, tenantParam);
             Func<object, object, object> factory = lambda.Compile();
             return factory(Context, TenantContext!);
         }
 
-        var constructor = implementationType.GetConstructor(new[] { contextType });
+        ConstructorInfo? constructor = implementationType.GetConstructor(new[] { contextType });
         if (constructor == null)
+        {
             throw new InvalidOperationException(
                 $"Type {implementationType.Name} does not have a constructor accepting {contextType.Name}.");
+        }
 
-        var param = Expression.Parameter(typeof(object), "context");
-        var convertedParam = Expression.Convert(param, contextType);
-        var newExpr2 = Expression.New(constructor, convertedParam);
-        var convertedResult2 = Expression.Convert(newExpr2, typeof(object));
+        ParameterExpression param = Expression.Parameter(typeof(object), "context");
+        UnaryExpression convertedParam = Expression.Convert(param, contextType);
+        NewExpression newExpr2 = Expression.New(constructor, convertedParam);
+        UnaryExpression convertedResult2 = Expression.Convert(newExpr2, typeof(object));
         Expression<Func<object, object>> lambda2 = Expression.Lambda<Func<object, object>>(convertedResult2, param);
         Func<object, object> factory2 = lambda2.Compile();
 
@@ -81,14 +90,17 @@ public class QueryUnitOfWork(DbContext context, IRepositoryCollection repository
         // اگر ریپازیتوری base دارای TenantContext به صورت property/field باشد با reflection ست کن (برای backward compatibility)
         if (TenantContext != null)
         {
-            var field = implementationType.GetField("_tenantContext", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
+            FieldInfo? field = implementationType.GetField("_tenantContext", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
             // تلاش برای ست کردن فیلد TenantContext در base class
-            var baseType = implementationType.BaseType;
+            Type? baseType = implementationType.BaseType;
             while (baseType != null && field == null)
             {
                 field = baseType.GetField("TenantContext", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
                 if (field == null)
+                {
                     field = baseType.GetField("_tenantContext", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                }
+
                 baseType = baseType.BaseType;
             }
             if (field != null)

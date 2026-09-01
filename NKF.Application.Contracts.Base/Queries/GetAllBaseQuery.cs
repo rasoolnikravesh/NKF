@@ -3,7 +3,7 @@ using NKF.Application.Contracts.Base.Responses;
 
 namespace NKF.Application.Contracts.Base.Queries;
 
-public class GetAllBaseQuery 
+public class GetAllBaseQuery
 {
     private IList<string>? _sorts;
 

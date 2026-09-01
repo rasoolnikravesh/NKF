@@ -1,38 +1,44 @@
-﻿using NKF.Persistence.Base.RepositoryCollection;
+using NKF.Persistence.Base.RepositoryCollection;
 
 namespace NKF.Persistence.Base;
 
 public class FUnitOfWork : IFUnitOfWork
 
 {
-	protected FUnitOfWork(IRepositoryCollection repositoryCollection)
-	{
-		RepositoryCollection = repositoryCollection;
-	}
+    protected FUnitOfWork(IRepositoryCollection repositoryCollection)
+    {
+        RepositoryCollection = repositoryCollection;
+    }
 
-	protected virtual void Dispose(bool disposing)
-	{
-		if (IsDisposed)
-			return;
-		if (disposing)
-			RepositoryCollection.Dispose();
-		IsDisposed = true;
-	}
+    protected virtual void Dispose(bool disposing)
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
 
-	public bool IsDisposed { get; private set; }
+        if (disposing)
+        {
+            RepositoryCollection.Dispose();
+        }
 
-	public IRepositoryCollection RepositoryCollection { get; }
+        IsDisposed = true;
+    }
+
+    public bool IsDisposed { get; private set; }
+
+    public IRepositoryCollection RepositoryCollection { get; }
 
 
-	~FUnitOfWork()
-	{
+    ~FUnitOfWork()
+    {
 
-		Dispose(false);
-	}
+        Dispose(false);
+    }
 
-	public void Dispose()
-	{
-		Dispose(true);
-		GC.SuppressFinalize(this);
-	}
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 }

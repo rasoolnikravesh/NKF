@@ -15,7 +15,9 @@ public static class ResultExtensions
         Func<T, Task<Result<T>>> func)
     {
         if (result.IsFailed)
+        {
             return result;
+        }
 
         return await func(result.Value);
     }
@@ -24,10 +26,12 @@ public static class ResultExtensions
         this Task<Result<T>> task,
         Func<T, Task<Result<T>>> func)
     {
-        var result = await task;
+        Result<T> result = await task;
 
         if (result.IsFailed)
+        {
             return result;
+        }
 
         return await func(result.Value);
     }
@@ -36,10 +40,12 @@ public static class ResultExtensions
         this Task<Result<T>> task,
         Func<T, Result<T>> func)
     {
-        var result = await task;
+        Result<T> result = await task;
 
         if (result.IsFailed)
+        {
             return result;
+        }
 
         return func(result.Value);
     }

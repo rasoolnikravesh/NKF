@@ -7,10 +7,12 @@ public sealed class DuplicateContext
 
     public T GetOrAdd<T>(object source, Func<T> factory)
     {
-        if (_map.TryGetValue(source, out var existing))
+        if (_map.TryGetValue(source, out object? existing))
+        {
             return (T)existing;
+        }
 
-        var created = factory();
+        T? created = factory();
         _map[source] = created;
 
         return created;

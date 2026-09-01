@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 
 namespace NKF.Application.Contracts.Base;
 
