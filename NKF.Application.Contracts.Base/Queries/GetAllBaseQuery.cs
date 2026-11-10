@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using NKF.Application.Contracts.Base.Responses;
 
 namespace NKF.Application.Contracts.Base.Queries;
 
@@ -27,6 +26,13 @@ public class GetAllBaseQuery
         get => _sorts;
         set
         {
+            if (value is null)
+            {
+                SortsQuery = null;
+                _sorts = null;
+                return;
+            }
+
             SortsQuery = value.Select(x => new SortQuery()
             {
                 SortBy = x.Split("|").First(),

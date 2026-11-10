@@ -84,10 +84,10 @@ public sealed class RepositoryCollection : IRepositoryCollection
     // method for cloning object
     public RepositoryCollection DeepCopy()
     {
-        var deepCopyCompany = new RepositoryCollection();
+        RepositoryCollection deepCopyCompany = new();
         foreach (RepositoryDescriptor descriptor in _descriptors)
         {
-            var cloned = descriptor.Clone() as RepositoryDescriptor;
+            RepositoryDescriptor? cloned = descriptor.Clone() as RepositoryDescriptor;
             deepCopyCompany.Add(cloned!.RepositoryType, cloned.ImplementationType!);
         }
 

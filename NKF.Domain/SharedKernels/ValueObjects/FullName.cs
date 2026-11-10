@@ -10,7 +10,7 @@ public class FullName : ValueObject
     public static Result<FullName>
         Create(int? gender, string? firstName, string? lastName)
     {
-        var errors = new List<IError>();
+        List<IError> errors = new();
 
         // **************************************************
         Result<Gender> genderResult =
@@ -38,8 +38,8 @@ public class FullName : ValueObject
             return Result.Fail<FullName>(errors);
         }
 
-        var returnValue =
-            new FullName(gender: genderResult.Value,
+        FullName returnValue =
+            new(gender: genderResult.Value,
                 firstName: firstNameResult.Value, lastName: lastNameResult.Value);
 
         return Result.Ok(value: returnValue);

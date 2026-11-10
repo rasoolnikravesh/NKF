@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace NKF.Domain.SeedWorks;
@@ -19,7 +20,7 @@ public abstract class Enumeration : object, IComparable
                  BindingFlags.DeclaredOnly)
             ;
 
-        var result3 =
+        List<FieldInfo> result3 =
                 result2
                     .Where(current => current.IsLiteral == false)
                     .ToList()
@@ -39,7 +40,8 @@ public abstract class Enumeration : object, IComparable
     }
 
     private static bool TryParse<TEnumeration>
-        (Func<TEnumeration, bool> predicate, out TEnumeration? enumeration) where TEnumeration : Enumeration
+        (Func<TEnumeration, bool> predicate, [NotNullWhen(true)] out TEnumeration? enumeration)
+        where TEnumeration : Enumeration
     {
         enumeration =
             GetAll<TEnumeration>()
@@ -88,7 +90,8 @@ public abstract class Enumeration : object, IComparable
     /// otherwise, <c>false</c>.
     /// </returns>
     public static bool TryGetFromValueOrName<TEnumeration>
-        (string valueOrName, out TEnumeration enumeration) where TEnumeration : Enumeration
+        (string valueOrName, [NotNullWhen(true)] out TEnumeration? enumeration)
+        where TEnumeration : Enumeration
     {
         return TryParse
                    (item => item.Name == valueOrName, out enumeration) ||
@@ -192,10 +195,12 @@ public abstract class Enumeration : object, IComparable
 
     public int CompareTo(object? otherObject)
     {
-        int result =
-            Value.CompareTo((otherObject as Enumeration).Value);
-
-        return result;
+        return otherObject switch
+        {
+            null => 1,
+            Enumeration enumeration => Value.CompareTo(enumeration.Value),
+            _ => throw new ArgumentException("Object must be an Enumeration.", nameof(otherObject))
+        };
     }
 
     public override int GetHashCode()
@@ -247,7 +252,7 @@ public abstract class Enumeration : object, IComparable
 
         if (type.ToString().Contains("Castle.Proxies."))
         {
-            return type.BaseType;
+            return type.BaseType ?? type;
         }
 
         return type;

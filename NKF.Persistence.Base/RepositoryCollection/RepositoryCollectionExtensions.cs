@@ -129,7 +129,7 @@ public static class RepositoryCollectionExtensions
         Type repositoryType,
         Type implementationType)
     {
-        RepositoryDescriptor repositoryDescriptor = new RepositoryDescriptor(repositoryType, implementationType);
+        RepositoryDescriptor repositoryDescriptor = new(repositoryType, implementationType);
         collection.Add(repositoryDescriptor);
         return collection;
     }

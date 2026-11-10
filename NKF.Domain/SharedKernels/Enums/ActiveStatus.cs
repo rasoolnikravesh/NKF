@@ -10,12 +10,12 @@ public class ActiveStatus : Enumeration
     #region Static Fields and Methods
 
     public const int MaxLength = 10;
-    public static readonly ActiveStatus Active = new ActiveStatus(0, FrameWorkDataDictionary.Active);
-    public static readonly ActiveStatus Deactive = new ActiveStatus(1, FrameWorkDataDictionary.Deactive);
+    public static readonly ActiveStatus Active = new(0, FrameWorkDataDictionary.Active);
+    public static readonly ActiveStatus Deactive = new(1, FrameWorkDataDictionary.Deactive);
 
     public static Result<ActiveStatus> GetByValue(int? value)
     {
-        Result<ActiveStatus> result = new Result<ActiveStatus>();
+        Result<ActiveStatus> result = new();
 
         if (value is null)
         {

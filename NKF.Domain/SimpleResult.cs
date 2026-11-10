@@ -40,7 +40,7 @@ public static class SimpleResultExtentions
 
     public static SimpleResult<T> ToSimpleResult<T>(this Result<T> result)
     {
-        SimpleResult<T> sResult = new SimpleResult<T>(result.IsSuccess,
+        SimpleResult<T> sResult = new(result.IsSuccess,
             [.. result.Errors.Select(x => x.Message)],
             [.. result.Successes.Select(x => x.Message)]);
 

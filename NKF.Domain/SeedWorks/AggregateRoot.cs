@@ -25,10 +25,10 @@ public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : Ent
     }
 
 
-    protected async Task<Result<T>> ApplyEventAsync<T>(IDomainEvent @event,
-        CancellationToken cancellationToken = default) where T : Entity<T>
+    protected async Task<Result<TAggregate>> ApplyEventAsync<TAggregate>(IDomainEvent @event,
+        CancellationToken cancellationToken = default) where TAggregate : Entity<TAggregate>
     {
-        return await Task.Run<Result<T>>(() =>
+        return await Task.Run<Result<TAggregate>>(() =>
         {
             if (@event == null)
             {
@@ -71,7 +71,7 @@ public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : Ent
             });
 
 
-            Result<T>? met = (func(this, @event) as Result<T>)!;
+            Result<TAggregate>? met = (func(this, @event) as Result<TAggregate>)!;
             RaiseDomainEvent(@event);
             return met;
         }, cancellationToken);

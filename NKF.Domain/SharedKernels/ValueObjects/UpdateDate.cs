@@ -14,14 +14,14 @@ public class UpdateDate : ValueObject
 
     public static Result<UpdateDate> CreateUtcNow()
     {
-        Result<UpdateDate> result = new Result<UpdateDate>();
+        Result<UpdateDate> result = new();
         result.WithValue(new UpdateDate() { Value = DateTime.UtcNow });
         return result;
     }
 
     public static Result<UpdateDate> Create(DateTime value)
     {
-        Result<UpdateDate> result = new Result<UpdateDate>();
+        Result<UpdateDate> result = new();
         result.WithValue(new UpdateDate() { Value = value });
         return result;
     }

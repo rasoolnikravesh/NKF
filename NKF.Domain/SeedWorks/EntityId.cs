@@ -1,7 +1,3 @@
-using System.Text.Json.Serialization;
-using FluentResults;
-using NKF.Resources.Messages;
-
 namespace NKF.Domain.SeedWorks;
 
 public abstract class EntityId : ValueObject

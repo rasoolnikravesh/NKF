@@ -48,7 +48,7 @@ public class QueryUnitOfWork(DbContext context, IRepositoryCollection repository
 
         RepositoryCollection.Remove(descriptor);
         // افزودن descriptor جدید با نمونه ساخته‌شده
-        var newDescriptor = new RepositoryDescriptor(descriptor.RepositoryType, repo);
+        RepositoryDescriptor newDescriptor = new(descriptor.RepositoryType, repo);
         RepositoryCollection.Add(newDescriptor);
         return repo;
     }

@@ -1,5 +1,4 @@
 using FluentResults;
-using NKF.Domain.SeedWorks;
 using NKF.Resources;
 
 namespace NKF.Domain.SharedKernels.ValueObjects;

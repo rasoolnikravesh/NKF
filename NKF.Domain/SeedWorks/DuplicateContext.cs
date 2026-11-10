@@ -5,7 +5,7 @@ public sealed class DuplicateContext
     private readonly Dictionary<object, object> _map = new();
     private readonly Dictionary<Guid, Guid> _idMap = new();
 
-    public T GetOrAdd<T>(object source, Func<T> factory)
+    public T GetOrAdd<T>(object source, Func<T> factory) where T : notnull
     {
         if (_map.TryGetValue(source, out object? existing))
         {

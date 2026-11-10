@@ -29,7 +29,7 @@ public class CreateDate : ValueObject
 
     public static Result<CreateDate> Create(DateTime? value)
     {
-        Result<CreateDate> result = new Result<CreateDate>();
+        Result<CreateDate> result = new();
         if (value is null)
         {
             string errorMessage = string.Format(FrameWorkValidations.Required, "CreateDate");

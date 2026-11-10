@@ -25,7 +25,7 @@ public abstract class GenericStringValueObject : ValueObject
 
     protected static Result Validate(string? value, int minLength, int maxLength, string fieldName, string displayName)
     {
-        var result = Result.Ok();
+        Result result = Result.Ok();
 
         if (string.IsNullOrWhiteSpace(value))
         {

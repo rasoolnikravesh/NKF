@@ -1,6 +1,5 @@
 using MediatR;
 using NKF.Domain.Events;
-using NKF.Domain.SeedWorks;
 
 namespace NKF.Application.Base;
 
