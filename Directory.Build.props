@@ -34,9 +34,9 @@
 
   <ItemGroup>
     <!-- SourceLink for NuGet -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     <!-- MinVer for automatic versioning from git tags -->
-    <PackageReference Include="MinVer" Version="5.0.0" PrivateAssets="All" />
+    <PackageReference Include="MinVer" PrivateAssets="All" />
   </ItemGroup>
 
   <!-- Pack icon.png if exists at repo root -->

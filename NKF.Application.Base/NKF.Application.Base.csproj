@@ -10,8 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentResults" Version="[4.0.0, 5.0.0)" />
-      <PackageReference Include="MediatR" Version="[14.0.0, 15.0.0)" />
+      <PackageReference Include="FluentResults" />
+      <PackageReference Include="MediatR" />
     </ItemGroup>
 
     <ItemGroup>
