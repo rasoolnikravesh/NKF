@@ -19,12 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **NKF.Application.Base**: Application layer with CQRS
   - `ICommandHandler<TCommand>` / `ICommandHandler<TCommand, TResponse>`
   - `IQueryHandler<TQuery, TResponse>`
-  - Mediator Pipeline Behaviors:
+  - CQRS pipeline behaviors:
     - `LoggingBehavior` - Request/response logging
     - `ValidationBehavior` - FluentValidation integration
     - `PerformanceBehaviour` - Slow request detection
     - `ExceptionBehaviour` - Global exception handling
-    - `EventBehavior` - Domain event publishing
 
 - **NKF.Application.Contracts.Base**: CQRS contract interfaces
   - `ICommand` / `ICommand<TResponse>` - Command markers
@@ -73,6 +72,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## [Unreleased]
+
+### Changed
+- CQRS dispatch uses Mediator; domain events use Wolverine with EF Core outbox publishing.
 
 ### Planned
 - Roslyn analyzers for DDD patterns

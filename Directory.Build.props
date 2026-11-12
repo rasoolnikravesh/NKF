@@ -9,7 +9,7 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/rasoolnikravesh/NKF</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageTags>ddd;domain-driven-design;cqrs;event-sourcing;mediatr;clean-architecture;nikravesh</PackageTags>
+    <PackageTags>ddd;domain-driven-design;cqrs;event-sourcing;mediator;wolverine;clean-architecture;nikravesh</PackageTags>
     <PackageReleaseNotes>See CHANGELOG.md</PackageReleaseNotes>
     <MinClientVersion>5.0.0</MinClientVersion>
 
