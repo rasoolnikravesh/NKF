@@ -1,10 +1,11 @@
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.Logging;
 
 namespace NKF.Application.Base.MediatorPipelines;
 
 
-public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IMessage
 {
     private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;
 
@@ -15,13 +16,13 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
 
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async ValueTask<TResponse> Handle(TRequest request, MessageHandlerDelegate<TRequest, TResponse> next, CancellationToken cancellationToken)
     {
         // Log the request being handled
         _logger.LogInformation($"Processing request of type {typeof(TRequest).Name}");
 
         // Pass control to the next handler or behavior in the pipeline
-        TResponse response = await next();
+        TResponse response = await next(request, cancellationToken);
 
         // Log the response after processing
         _logger.LogInformation($"Completed handling request, response type: {typeof(TResponse).Name}");

@@ -1,10 +1,11 @@
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.Logging;
 
 namespace NKF.Application.Base.MediatorPipelines;
 
 
-public class ExeptionBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class ExeptionBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IMessage
 {
     private readonly ILogger<ExeptionBehaviour<TRequest, TResponse>> _logger;
 
@@ -13,11 +14,11 @@ public class ExeptionBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest
         _logger = logger;
     }
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async ValueTask<TResponse> Handle(TRequest request, MessageHandlerDelegate<TRequest, TResponse> next, CancellationToken cancellationToken)
     {
         try
         {
-            return await next();
+            return await next(request, cancellationToken);
         }
         catch (Exception ex)
         {

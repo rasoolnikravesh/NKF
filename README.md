@@ -14,7 +14,7 @@
 **NKF (Nikravesh Framework)** is a lightweight, opinionated .NET framework that enforces **Clean Architecture** and **Domain-Driven Design** patterns out of the box. It provides battle-tested building blocks for:
 
 - **Domain Layer**: Entities, Aggregates, Value Objects, Domain Events
-- **Application Layer**: CQRS with MediatR, Commands/Queries/Handlers
+- **Application Layer**: CQRS with Mediator, Commands/Queries/Handlers
 - **Persistence Layer**: Repository Pattern, Unit of Work, EF Core (PostgreSQL)
 - **Cross-Cutting**: Multi-tenancy, Localization, Validation, Logging pipelines
 
@@ -34,7 +34,7 @@ Built for teams who want **structure without ceremony** — start modeling your 
 │ • Entity<T>     │ • IQuery<T>     │ • ICommandRepository<T>     │
 │ • TypedEntity   │ • ICommandHandler│ • IQueryRepository<T>      │
 │ • EntityId      │ • IQueryHandler │ • ITypedCommandRepository   │
-│ • ValueObject   │ • MediatR       │ • ITypedQueryRepository     │
+│ • ValueObject   │ • Mediator       │ • ITypedQueryRepository     │
 │ • IDomainEvent  │ • Pipeline      │ • IUnitOfWork               │
 │ • ITenantAware  │                 │ • EF Core (PostgreSQL)      │
 │ • Enumerations  │                 │ • Multi-tenancy             │
@@ -352,21 +352,21 @@ public class BrandsController : ControllerBase
 ```csharp
 // NKF.Application.Base/MediatorPipelines/
 ├── LoggingBehavior.cs        # Request/response logging
-├── ValidationBehavior.cs     # FluentValidation integration
 ├── PerformanceBehaviour.cs   # Slow request detection
 ├── ExceptionBehaviour.cs     # Global exception handling
-└── EventBehavior.cs          # Domain event publishing
 ```
 
 Register in `Program.cs`:
 
 ```csharp
-builder.Services.AddMediatR(cfg => 
+builder.Services.AddMediator(options =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
-    cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-    cfg.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
+    options.Assemblies = [typeof(Program).Assembly];
+    options.PipelineBehaviors =
+    [
+        typeof(LoggingBehavior<,>),
+        typeof(PerformanceBehaviour<,>)
+    ];
 });
 ```
 
@@ -694,7 +694,7 @@ Distributed under the **Apache License 2.0**. See `LICENSE` for more information
 
 ## 🙏 Acknowledgments
 
-- **MediatR** — CQRS mediator implementation
+- **Mediator** — CQRS mediator implementation
 - **FluentResults** — Functional result handling
 - **FluentValidation** — Validation pipeline
 - **EF Core** — ORM for persistence

@@ -8,7 +8,7 @@ EF Core PostgreSQL implementation for NKF Persistence.
 - **QueryRepository<T>** — EF Core read repository base (auto-assigns `ITenantAware.TenantId`)
 - **TypedCommandRepository<TEntity,TId>** — EF Core typed write repository base (1.0.1)
 - **TypedQueryRepository<TEntity,TId>** — EF Core typed read repository base (1.0.1)
-- **CommandUnitOfWork** — Transaction management with MediatR for domain events + `TenantId` propagation
+- **CommandUnitOfWork** — Transaction management with Mediator for domain events + `TenantId` propagation
 - **QueryUnitOfWork** — Read-only unit of work + `TenantId` propagation
 - **PersistenceOperation<TRequest,TResult>** — Base class for one EF Core operation; subclasses implement `Execute`
 - **CommandPersistenceOperation / QueryPersistenceOperation** — EF bases parameterized by a concrete DbContext type; expose it to subclasses through `protected Context` only

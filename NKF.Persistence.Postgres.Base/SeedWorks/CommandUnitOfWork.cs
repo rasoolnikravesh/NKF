@@ -2,23 +2,35 @@ using System.Linq.Expressions;
 using System.Reflection;
 using FluentResults;
 using FluentResults.Extensions;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NKF.Domain.SeedWorks;
 using NKF.Persistence.Base;
 using NKF.Persistence.Base.RepositoryCollection;
+using Wolverine.EntityFrameworkCore;
 
 namespace NKF.Persistence.Postgres.Base.SeedWorks;
 
-public class CommandUnitOfWork(DbContext context, IRepositoryCollection repositoryCollection, IMediator mediator, TenantContext? tenantContext = null)
-    : FUnitOfWork(repositoryCollection), ICommandUnitOfWork
+public class CommandUnitOfWork : FUnitOfWork, ICommandUnitOfWork
 {
-    private DbContext Context { get; } = context;
-    private TenantContext? TenantContext { get; } = tenantContext;
+    private DbContext Context { get; }
+    private IDbContextOutbox Outbox { get; }
+    private TenantContext? TenantContext { get; }
 
-    private IMediator Mediator { get; } = mediator;
     private IDbContextTransaction? ContextTransaction { get; set; }
+
+    public CommandUnitOfWork(
+        DbContext context,
+        IRepositoryCollection repositoryCollection,
+        IDbContextOutbox outbox,
+        TenantContext? tenantContext = null)
+        : base(repositoryCollection)
+    {
+        Context = context ?? throw new ArgumentNullException(nameof(context));
+        Outbox = outbox ?? throw new ArgumentNullException(nameof(outbox));
+        TenantContext = tenantContext;
+        Outbox.Enroll(Context);
+    }
 
     public ICommandRepository<T> GetCommandRepository<T>() where T : class, IAggregateRoot
         => DescriptorImplementationInstance<T>(typeof(T));
@@ -127,8 +139,9 @@ public class CommandUnitOfWork(DbContext context, IRepositoryCollection reposito
     {
         try
         {
-            int r = await Context.SaveChangesAsync(cancellationToken);
-            return Result.OkIf(r != 0, "").OrFailIf(r == 0, "");
+            bool hasChanges = Context.ChangeTracker.HasChanges();
+            await Outbox.SaveChangesAndFlushMessagesAsync(cancellationToken);
+            return Result.OkIf(hasChanges, "").OrFailIf(!hasChanges, "");
         }
         catch (Exception e)
         {

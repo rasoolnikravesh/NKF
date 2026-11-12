@@ -1,6 +1,6 @@
 # NKF.Application.Base
 
-Application layer base with CQRS handlers and MediatR pipeline behaviors.
+Application layer base with CQRS handlers and Mediator pipeline behaviors.
 
 ## Features
 
@@ -35,12 +35,14 @@ public class CreateBrandCommandHandler : ICommandHandler<CreateBrandCommand, Bra
 ## Register Pipeline Behaviors
 
 ```csharp
-builder.Services.AddMediatR(cfg => 
+builder.Services.AddMediator(options =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
-    cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-    cfg.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
+    options.Assemblies = [typeof(Program).Assembly];
+    options.PipelineBehaviors =
+    [
+        typeof(LoggingBehavior<,>),
+        typeof(PerformanceBehaviour<,>)
+    ];
 });
 ```
 

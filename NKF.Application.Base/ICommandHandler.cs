@@ -1,17 +1,16 @@
 using FluentResults;
-using MediatR;
 
 namespace NKF.Application.Base;
 
 public interface ICommandHandler<in TCommand> :
-    IRequestHandler<TCommand, Result>
-    where TCommand : IRequest<Result>
+    Mediator.ICommandHandler<TCommand, Result>
+    where TCommand : Mediator.ICommand<Result>
 {
 
 }
 
 public interface ICommandHandler<in TCommand, TReturnValue> :
-    IRequestHandler<TCommand, Result<TReturnValue>>
-    where TCommand : IRequest<Result<TReturnValue>>
+    Mediator.ICommandHandler<TCommand, Result<TReturnValue>>
+    where TCommand : Mediator.ICommand<Result<TReturnValue>>
 {
 }

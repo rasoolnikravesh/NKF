@@ -5,13 +5,13 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>NKF.Application.Base</PackageId>
-        <Description>NKF Application Base Framework - CQRS handlers and MediatR pipeline behaviors (Logging, Validation, Performance, Exception, Event publishing)</Description>
+        <Description>NKF Application Base Framework - CQRS handlers and Mediator pipeline behaviors</Description>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="FluentResults" />
-      <PackageReference Include="MediatR" />
+      <PackageReference Include="Mediator.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>

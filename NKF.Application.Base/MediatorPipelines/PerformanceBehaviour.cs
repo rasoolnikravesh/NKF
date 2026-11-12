@@ -1,11 +1,12 @@
 using System.Diagnostics;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.Logging;
 
 namespace NKF.Application.Base.MediatorPipelines;
 
 
-public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IMessage
 {
     private readonly ILogger<PerformanceBehaviour<TRequest, TResponse>> _logger;
 
@@ -20,11 +21,11 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
     }
 
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async ValueTask<TResponse> Handle(TRequest request, MessageHandlerDelegate<TRequest, TResponse> next, CancellationToken cancellationToken)
     {
 
         Stopwatch stopwatch = Stopwatch.StartNew();
-        TResponse response = await next();
+        TResponse response = await next(request, cancellationToken);
         stopwatch.Stop();
         _logger.LogInformation("Request {Request} executed in {ElapsedMilliseconds}ms", typeof(TRequest).Name, stopwatch.ElapsedMilliseconds);
 
