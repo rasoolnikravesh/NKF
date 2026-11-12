@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>NKF.Persistence.Base</PackageId>
-        <Description>NKF Persistence Base Framework - Repository pattern, Unit of Work, RepositoryCollection auto-discovery, Multi-tenancy</Description>
+        <Description>NKF Persistence Base Framework - named persistence operations, Unit of Work, transactions, Multi-tenancy</Description>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 

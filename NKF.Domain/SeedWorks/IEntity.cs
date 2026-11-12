@@ -8,4 +8,6 @@ public interface IEntity
 public interface IEntity<TId> : IEntity where TId : EntityId
 {
     new TId Id { get; }
+
+    Guid IEntity.Id => Id.Value;
 }

@@ -1,43 +1,45 @@
 # NKF.Application.Base
 
-Application layer base with CQRS handlers and Mediator pipeline behaviors.
+Application layer contracts for CQRS handlers and Mediator pipeline behaviors.
 
-## Features
+## Handler contracts
 
-- **ICommandHandler<TCommand>** — Handles commands returning `Result`
-- **ICommandHandler<TCommand, TResponse>** — Handles commands returning `Result<TResponse>`
-- **IQueryHandler<TQuery, TResponse>** — Handles queries returning `Result<TResponse>`
-- **Pipeline Behaviors** — Logging, Validation, Performance, Exception, Event publishing
+- `ICommandHandler<TCommand>` handles commands returning `Result`.
+- `ICommandHandler<TCommand, TResponse>` handles commands returning `Result<TResponse>`.
+- `IQueryHandler<TQuery, TResponse>` handles queries returning `Result<TResponse>`.
 
-## Install
-
-```bash
-dotnet add package NKF.Application.Base
-```
-
-## Usage
+Handlers receive database capabilities through named persistence operation interfaces from the application's persistence contracts. They do not receive a repository or `DbContext`.
 
 ```csharp
-public class CreateBrandCommandHandler : ICommandHandler<CreateBrandCommand, BrandCreatedResponse>
+public sealed class CreateBrandCommandHandler(
+    IAddBrandOperation addBrand,
+    IUnitOfWork unitOfWork) : ICommandHandler<CreateBrandCommand, BrandCreatedResponse>
 {
-    private readonly ICommandUnitOfWork _unitOfWork;
-    
-    public async Task<Result<BrandCreatedResponse>> Handle(CreateBrandCommand request, CancellationToken ct)
+    public async ValueTask<Result<BrandCreatedResponse>> Handle(
+        CreateBrandCommand request,
+        CancellationToken cancellationToken)
     {
-        var brand = await Brand.CreateAsync(request.Name);
-        await _unitOfWork.GetCommandRepository<Brand>().AddAsync(brand.Value, ct);
-        await _unitOfWork.SaveAsync(ct);
-        return Result.Ok(new BrandCreatedResponse { Id = brand.Value.Id });
+        Result<Brand> brand = await Brand.CreateAsync(request.Name);
+        if (brand.IsFailed)
+        {
+            return Result.Fail<BrandCreatedResponse>(brand.Errors);
+        }
+
+        await addBrand.Execute(brand.Value, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return Result.Ok(new BrandCreatedResponse(brand.Value.Id));
     }
 }
 ```
 
-## Register Pipeline Behaviors
+## Pipeline registration
+
+Mediator registration belongs in the application layer's dependency container:
 
 ```csharp
-builder.Services.AddMediator(options =>
+services.AddMediator(options =>
 {
-    options.Assemblies = [typeof(Program).Assembly];
+    options.Assemblies = [typeof(CreateBrandCommand).Assembly];
     options.PipelineBehaviors =
     [
         typeof(LoggingBehavior<,>),
@@ -45,10 +47,6 @@ builder.Services.AddMediator(options =>
     ];
 });
 ```
-
-## Repository
-
-[github.com/rasoolnikravesh/NKF](https://github.com/rasoolnikravesh/NKF)
 
 ## License
 

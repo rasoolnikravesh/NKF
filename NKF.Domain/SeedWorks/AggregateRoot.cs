@@ -8,27 +8,28 @@ using NKF.Domain.SharedKernels.ValueObjects;
 
 namespace NKF.Domain.SeedWorks;
 
-public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : Entity<T>
+public abstract class AggregateRoot<T, TId> : Entity<T, TId>, IAggregateRoot<TId>
+    where T : Entity<T, TId>
+    where TId : EntityId
 {
-    private static readonly ConcurrentDictionary<(Type aggregateType, Type eventType), Func<object, object, object>>
-        ApplyFuncS = new();
+    private static readonly ConcurrentDictionary<(Type aggregateType, Type eventType), Func<object, object, object>> ApplyFuncS = new();
 
-    protected AggregateRoot(Guid createdByUserId) : base(createdByUserId)
+    protected AggregateRoot(TId id, Guid createdByUserId) : base(id, createdByUserId)
     {
         _domainEvents = [];
     }
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8618
     protected AggregateRoot() : base()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning restore CS8618
     {
+        _domainEvents = [];
     }
 
-
-    protected async Task<Result<TAggregate>> ApplyEventAsync<TAggregate>(IDomainEvent @event,
-        CancellationToken cancellationToken = default) where TAggregate : Entity<TAggregate>
+    protected async Task<Result<T>> ApplyEventAsync<TAggregate>(IDomainEvent @event, CancellationToken cancellationToken = default)
+        where TAggregate : Entity<T, TId>
     {
-        return await Task.Run<Result<TAggregate>>(() =>
+        return await Task.Run<Result<T>>(() =>
         {
             if (@event == null)
             {
@@ -40,38 +41,33 @@ public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : Ent
             (Type aggregateType, Type eventType) key = (aggregateType, eventType);
             Func<object, object, object> func = ApplyFuncS.GetOrAdd(key, k =>
             {
-                MethodInfo? method = aggregateType.GetMethod(
+                System.Reflection.MethodInfo? method = aggregateType.GetMethod(
                     "Apply",
                     BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
                     null,
-                    new[] { eventType },
+                    new Type[] { eventType },
                     null);
 
                 if (method == null)
                 {
                     throw new InvalidOperationException(
-                        $"No Apply method found for event type '{eventType.Name}' in aggregate" +
-                        $" '{aggregateType.Name}'.");
+                        $"No Apply method found for event type '{eventType.Name}' in aggregate '{aggregateType.Name}'.");
                 }
 
-                // پارامترهای Expression: handler (object) و event (object)
                 ParameterExpression handlerParam = Expression.Parameter(typeof(object), "handler");
                 ParameterExpression eventParam = Expression.Parameter(typeof(object), "event");
 
-                // فراخوانی متد: ((aggregateType)handler).Apply((eventType)event)
                 MethodCallExpression callExpr = Expression.Call(
                     Expression.TypeAs(handlerParam, aggregateType),
                     method,
                     Expression.TypeAs(eventParam, eventType));
 
-                // ساخت Func<object, object, object> (ورودی‌ها object، خروجی object)
                 Expression<Func<object, object, object>> lambda =
                     Expression.Lambda<Func<object, object, object>>(callExpr, handlerParam, eventParam);
                 return lambda.Compile();
             });
 
-
-            Result<TAggregate>? met = (func(this, @event) as Result<TAggregate>)!;
+            Result<T>? met = (func(this, @event) as Result<T>)!;
             RaiseDomainEvent(@event);
             return met;
         }, cancellationToken);
@@ -82,9 +78,11 @@ public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : Ent
         _domainEvents.Clear();
     }
 
-    [JsonIgnore] private readonly List<IDomainEvent> _domainEvents;
-    [JsonIgnore] public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents;
+    [JsonIgnore]
+    private readonly List<IDomainEvent> _domainEvents;
 
+    [JsonIgnore]
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents;
 
     protected void RaiseDomainEvent(IDomainEvent? domainEvent)
     {
@@ -107,6 +105,4 @@ public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : Ent
         UpdateDate update = UpdateDate.CreateUtcNow().Value;
         UpdatedDateTime = update;
     }
-
-
 }

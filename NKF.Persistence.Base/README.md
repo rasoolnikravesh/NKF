@@ -1,74 +1,28 @@
 # NKF.Persistence.Base
 
-Persistence abstractions: Repository pattern, Unit of Work, and multi-tenancy.
+Persistence contracts for named database operations, save coordination, and transactions.
 
-## Features
+## Operation contracts
 
-- **IRepository<T>** — Read repository
-- **ICommandRepository<T>** — Write repository (Add, Update, Remove)
-- **IQueryRepository<T>** — Read-only repository
-- **ITypedCommandRepository<TEntity,TId>** — Strongly-typed write repository for `TypedAggregateRoot<T,TId>` (1.0.1)
-- **ITypedQueryRepository<TEntity,TId>** — Strongly-typed read repository for `TypedAggregateRoot<T,TId>` (1.0.1)
-- **IUnitOfWork / ICommandUnitOfWork / IQueryUnitOfWork** — Transaction boundaries with auto `TenantId` propagation
-- **IPersistenceOperation<TRequest,TResult>** — One typed `Execute` contract per database operation
-- **ICommandPersistenceOperation / IQueryPersistenceOperation** — Role-specific contracts for write and read operations
-- **IUnitOfWork** — Save changes only; transaction creation is handled separately
-- **ITransactionManager** — Explicit transaction boundary, separate from saving changes
-- **RepositoryCollection** — Auto-discovery for repositories
-- **TenantContext** — Multi-tenancy support (auto-assigns `ITenantAware.TenantId`)
-
-## Install
-
-```bash
-dotnet add package NKF.Persistence.Base
-```
-
-## Usage
-
-For operation-based persistence, define a named interface for each database action and implement it in the provider-specific project:
+Give each database action a named interface. Keep command and query contracts in separate folders, grouped by aggregate and entity:
 
 ```csharp
-public interface IGetBrandByIdOperation : IPersistenceOperation<Guid, Brand?>
-{
-}
+public interface IGetBrandByIdOperation
+    : IQueryPersistenceOperation<Guid, Brand?>;
 ```
 
-Prefer role-specific contracts for new work: `ICommandPersistenceOperation<TRequest, TResult>` or `IQueryPersistenceOperation<TRequest, TResult>`. Give each operation its own named interface and keep command/query interfaces in separate folders.
+Application handlers inject the named interface and call its single `Execute` method. They do not depend on `DbContext` or generic operation contracts directly.
 
-Application handlers inject the named interface and call `Execute`. They do not inject the generic contract directly.
+`ICommandPersistenceOperation<TRequest, TResult>` and `IQueryPersistenceOperation<TRequest, TResult>` both extend `IPersistenceOperation<TRequest, TResult>`. The named interface is what the application layer consumes.
 
-```csharp
-public interface IBrandCommandRepository : ICommandRepository<Brand>
-{
-    Task<bool> HasExistBrandByName(BrandName name, CancellationToken ct);
-}
+## Save and transaction contracts
 
-// Strongly-typed (1.0.1)
-public interface ITypedBrandCommandRepository : ITypedCommandRepository<TypedBrand, BrandId>
-{
-    Task<bool> HasExistBrandByName(BrandName name, CancellationToken ct);
-}
+- `IUnitOfWork.SaveChangesAsync` persists the current unit of work.
+- `ITransactionManager.BeginTransactionAsync` starts an explicit transaction when a use case needs one.
+- `ITransaction` exposes commit and rollback operations.
 
-// Auto-discovery registration
-CommandCollection.AddFromAssembly(
-    typeof(IBrandCommandRepository),
-    typeof(BrandCommandRepository)
-);
+The operation interfaces are provider agnostic. Register each provider's operation implementations with scoped lifetime.
 
-// In handler
-var repo = _unitOfWork.GetCommandRepository<Brand>();
-await repo.AddAsync(brand, ct);
-await _unitOfWork.SaveAsync(ct);
+## Tenant context
 
-// Typed with TenantId auto-propagation (assigned by CommandUnitOfWork/QueryUnitOfWork)
-var typedRepo = _unitOfWork.GetTypedCommandRepository<TypedBrand, BrandId>();
-await typedRepo.AddAsync(typedBrand, ct); // TenantId set automatically
-```
-
-## Repository
-
-[github.com/rasoolnikravesh/NKF](https://github.com/rasoolnikravesh/NKF)
-
-## License
-
-Apache-2.0
+`TenantContext` carries the current tenant identifier for persistence implementations. Tenant filtering and tenant assignment belong in the tenant aware operation implementation so each operation has explicit behavior.

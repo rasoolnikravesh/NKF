@@ -4,53 +4,45 @@ using NKF.Domain.SharedKernels.ValueObjects;
 
 namespace NKF.Domain.SeedWorks;
 
-public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITenantAware where T : Entity<T>
+public abstract class Entity<T, TId> : IEntity<TId>, IDeepDuplicatable<T>, IAuditable, ITenantAware
+    where T : Entity<T, TId>
+    where TId : EntityId
 {
-    #region Feilds
+    public TId Id { get; protected set; } = default!;
 
-    public Guid Id { get; protected set; }
+    Guid IEntity.Id => Id.Value;
 
     public Guid? CreatedByUserId { get; protected set; }
-    public CreateDate CreatedDateTime { get; protected set; }
+
+    public CreateDate CreatedDateTime { get; protected set; } = default!;
 
     public Guid? UpdatedByUserId { get; protected set; }
-    public UpdateDate UpdatedDateTime { get; protected set; }
+
+    public UpdateDate UpdatedDateTime { get; protected set; } = default!;
 
     public Guid? OwnedByUserId { get; protected set; }
 
     public bool IsDeleted { get; protected set; }
+
     public Guid? DeletedByUserId { get; protected set; }
 
     [NotMapped]
     public Guid TenantId { get; protected set; }
 
-    #endregion
-
-    #region Constroctor(s)
-
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    protected Entity() : base()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    protected Entity()
     {
     }
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    protected Entity(Guid createdByUserId) : this()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
+    protected Entity(TId id, Guid createdByUserId) : this()
     {
-        Id = Guid.NewGuid();
+        Id = id;
         IsDeleted = false;
         Result<CreateDate> result = CreateDate.Create(DateTime.UtcNow);
         CreatedDateTime = result.Value;
         CreatedByUserId = createdByUserId;
     }
 
-
-    #endregion /Constroctor(s)
-
-
-    #region Methods
-
-    public static bool operator ==(Entity<T>? left, Entity<T>? right)
+    public static bool operator ==(Entity<T, TId>? left, Entity<T, TId>? right)
     {
         return left switch
         {
@@ -60,29 +52,47 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
         };
     }
 
-    public static bool operator !=(Entity<T>? left, Entity<T>? right)
+    public static bool operator !=(Entity<T, TId>? left, Entity<T, TId>? right)
     {
         return !(left == right);
     }
 
-
     private int? _requestedHashCode;
 
-    private bool IsTransient() => Id == Guid.Empty;
+    private bool IsTransient()
+    {
+        return Id == null || Id.IsEmpty();
+    }
 
     public T Duplicate(DuplicateContext context)
     {
         return context.GetOrAdd(this, () =>
         {
             T copy = CreateDuplicateInstance();
-
-            copy.Id = Guid.NewGuid();
-            context.MapId(Id, copy.Id);
-
+            TId newId = CreateNewId();
+            context.MapId(Id, newId);
+            copy.Id = newId;
             CopyTo(copy, context);
-
             return copy;
         });
+    }
+
+    private TId CreateNewId()
+    {
+        System.Reflection.MethodInfo? method = typeof(TId).GetMethod(
+            "New",
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+
+        if (method != null)
+        {
+            object? result = method.Invoke(null, null);
+            if (result is TId typedId)
+            {
+                return typedId;
+            }
+        }
+
+        throw new InvalidOperationException($"No static New() method found for {typeof(TId).Name}.");
     }
 
     protected abstract T CreateDuplicateInstance();
@@ -106,10 +116,10 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
         }
     }
 
-    /// <summary>
-    /// برای استفاده در لایه Persistence بعد از کوئری - به صورت NotMapped ست می‌شود
-    /// </summary>
-    public void AssignTenantId(Guid tenantId) => SetTenantId(tenantId);
+    public void AssignTenantId(Guid tenantId)
+    {
+        SetTenantId(tenantId);
+    }
 
     public override bool Equals(object? anotherObject)
     {
@@ -118,7 +128,7 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
             return false;
         }
 
-        if (anotherObject is not Entity<T>)
+        if (anotherObject is not Entity<T, TId>)
         {
             return false;
         }
@@ -128,7 +138,7 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
             return true;
         }
 
-        Entity<T>? anotherEntity = anotherObject as Entity<T>;
+        Entity<T, TId>? anotherEntity = anotherObject as Entity<T, TId>;
         if (GetRealType() != anotherEntity?.GetRealType())
         {
             return false;
@@ -144,7 +154,7 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
             return false;
         }
 
-        return Id == anotherEntity.Id;
+        return Id.Equals(anotherEntity.Id);
     }
 
     public override int GetHashCode()
@@ -173,7 +183,6 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
 
         UpdatedByUserId = updatedByUserId;
         UpdatedDateTime = UpdateDate.CreateUtcNow().Value;
-
         return (T)this;
     }
 
@@ -189,6 +198,4 @@ public abstract class Entity<T> : IEntity, IAuditable, IDeepDuplicatable<T>, ITe
         UpdatedDateTime = UpdateDate.CreateUtcNow().Value;
         return (T)this;
     }
-
-    #endregion
 }

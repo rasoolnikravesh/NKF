@@ -8,3 +8,7 @@ public interface IAggregateRoot : IEntity
 
     IReadOnlyList<IDomainEvent> DomainEvents { get; }
 }
+
+public interface IAggregateRoot<TId> : IEntity<TId>, IAggregateRoot where TId : EntityId
+{
+}
