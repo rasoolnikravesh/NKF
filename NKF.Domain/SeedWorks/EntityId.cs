@@ -4,6 +4,10 @@ public abstract class EntityId : ValueObject
 {
     public Guid Value { get; }
 
+    protected EntityId()
+    {
+    }
+
     protected EntityId(Guid value)
     {
         Value = value;
