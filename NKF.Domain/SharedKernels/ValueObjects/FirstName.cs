@@ -44,8 +44,15 @@ public class FirstName : GenericStringValueObject
     #endregion
 
 
-    public override int GetMaxLength() => MaxLength;
-    public override int GetMinLength() => 0;
+    public override int GetMaxLength()
+    {
+        return MaxLength;
+    }
+
+    public override int GetMinLength()
+    {
+        return 0;
+    }
 
 
     protected override IEnumerable<object> GetEqualityComponents()

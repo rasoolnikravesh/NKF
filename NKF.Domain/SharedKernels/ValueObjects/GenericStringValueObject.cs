@@ -52,5 +52,8 @@ public abstract class GenericStringValueObject : ValueObject
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

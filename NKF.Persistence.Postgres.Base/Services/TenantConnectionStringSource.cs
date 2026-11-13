@@ -107,11 +107,17 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
         }
     }
 
-    public IReadOnlyList<string> AllActive() => _connectionStrings.Values.Distinct().ToArray();
+    public IReadOnlyList<string> AllActive()
+    {
+        return _connectionStrings.Values.Distinct().ToArray();
+    }
 
-    public IReadOnlyList<Assignment<string>> AllActiveByTenant() => _connectionStrings
-        .Select(tenant => new Assignment<string>(tenant.Key, tenant.Value))
-        .ToArray();
+    public IReadOnlyList<Assignment<string>> AllActiveByTenant()
+    {
+        return _connectionStrings
+            .Select(tenant => new Assignment<string>(tenant.Key, tenant.Value))
+            .ToArray();
+    }
 
     private sealed record TenantApiResponse(bool IsSucces, TenantConnection? Value, List<string>? Errors);
     private sealed record TenantListApiResponse(bool IsSucces, List<TenantConnection>? Value, List<string>? Errors);

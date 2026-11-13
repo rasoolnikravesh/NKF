@@ -40,9 +40,15 @@ public class LastName : GenericStringValueObject
 
     #endregion /Constructor(s)
 
-    public override int GetMaxLength() => MaxLength;
+    public override int GetMaxLength()
+    {
+        return MaxLength;
+    }
 
-    public override int GetMinLength() => MinLength;
+    public override int GetMinLength()
+    {
+        return MinLength;
+    }
 
 
     protected override IEnumerable<object> GetEqualityComponents()
