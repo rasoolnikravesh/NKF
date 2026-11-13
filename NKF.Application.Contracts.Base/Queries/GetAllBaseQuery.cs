@@ -4,8 +4,6 @@ namespace NKF.Application.Contracts.Base.Queries;
 
 public class GetAllBaseQuery
 {
-    private IList<string>? _sorts;
-
     public GetAllBaseQuery()
     {
         if (Sorts is not null && Sorts.Any())
@@ -23,22 +21,21 @@ public class GetAllBaseQuery
 
     public IList<string>? Sorts
     {
-        get => _sorts;
+        get;
         set
         {
             if (value is null)
             {
                 SortsQuery = null;
-                _sorts = null;
+                field = null;
                 return;
             }
 
-            SortsQuery = value.Select(x => new SortQuery()
-            {
-                SortBy = x.Split("|").First(),
-                SortDirection = x.Split("|").Last()
-            }).ToList();
-            _sorts = value;
+            List<SortQuery> list = value.Select(x => new SortQuery()
+                { SortBy = x.Split("|").First(), SortDirection = x.Split("|").Last() }).ToList();
+
+            SortsQuery = list;
+            field = value;
         }
     }
 

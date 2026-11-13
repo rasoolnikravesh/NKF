@@ -1,6 +1,6 @@
 namespace NKF.Domain.SeedWorks;
 
-public interface IDeepDuplicatable<T>
+public interface IDeepDuplicatable<out T>
 {
     T Duplicate(DuplicateContext context);
 }

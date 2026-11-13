@@ -5,7 +5,7 @@ public interface IEntity
     Guid Id { get; }
 }
 
-public interface IEntity<TId> : IEntity where TId : EntityId
+public interface IEntity<out TId> : IEntity where TId : EntityId
 {
     new TId Id { get; }
 
