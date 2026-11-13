@@ -1,10 +1,11 @@
 # NKF.Domain.Events
 
-Domain event marker interface for NKF framework.
+Event contracts for NKF framework.
 
 ## Features
 
-- **IDomainEvent** — Marker interface for domain events
+- **IDomainEvent** — Marker interface for internal domain events
+- **IIntegrationEvent** — Versionable contract interface for events published to other services
 
 ## Install
 
@@ -18,6 +19,8 @@ dotnet add package NKF.Domain.Events
 public record BrandCreatedEvent(Guid BrandId, string Name, bool IsActive) : IDomainEvent;
 
 public record BrandStatusChangedEvent(Guid BrandId, bool IsActive) : IDomainEvent;
+
+public sealed record BrandCreatedV1(Guid BrandId, string Name, DateTime OccurredOn) : IIntegrationEvent;
 ```
 
 ## Repository

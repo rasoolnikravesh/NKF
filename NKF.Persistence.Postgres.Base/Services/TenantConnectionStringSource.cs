@@ -39,15 +39,25 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
             }
 
             throw new InvalidOperationException(
-                $"Tenant '{tenantId}' has no connection for context '{_contextName}'.");
+                $"Tenant API did not return a connection for tenant '{tenantId}' in context '{_contextName}'. " +
+                $"Verify that the tenant has a '{_contextName}' context app and that Tenant API is configured correctly.");
         }
 
         string requestUri = $"{_tenantApiBaseUrl.TrimEnd('/')}/Tenant?Slug={Uri.EscapeDataString(tenantId)}&ContextName={Uri.EscapeDataString(_contextName)}";
         TenantApiResponse? response = await Client.GetFromJsonAsync<TenantApiResponse>(requestUri);
-        if (response is not { IsSucces: true, Value: not null })
+        if (response is null)
         {
             throw new InvalidOperationException(
-                $"Tenant '{tenantId}' has no connection for context '{_contextName}'.");
+                $"Tenant API returned an empty response while resolving tenant '{tenantId}' for context '{_contextName}'.");
+        }
+
+        if (!response.IsSucces || response.Value is null)
+        {
+            string errors = response.Errors is { Count: > 0 }
+                ? string.Join("; ", response.Errors)
+                : "No error details were returned.";
+            throw new InvalidOperationException(
+                $"Tenant API could not load connections for context '{_contextName}': {errors}");
         }
 
         _connectionStrings[response.Value.Id.ToString()] = response.Value.ConnectionString;
@@ -63,18 +73,32 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
         {
             response = await Client.GetFromJsonAsync<TenantListApiResponse>(requestUri);
         }
-        catch (HttpRequestException)
+        catch (HttpRequestException exception)
         {
-            return;
+            throw new InvalidOperationException(
+                $"Could not load tenant connections for context '{_contextName}' from Tenant API '{_tenantApiBaseUrl}'.",
+                exception);
         }
-        catch (TaskCanceledException)
+        catch (TaskCanceledException exception)
         {
-            return;
+            throw new InvalidOperationException(
+                $"The request for tenant connections for context '{_contextName}' timed out at Tenant API '{_tenantApiBaseUrl}'.",
+                exception);
         }
 
-        if (response is not { IsSucces: true, Value: not null })
+        if (response is null)
         {
-            return;
+            throw new InvalidOperationException(
+                $"Tenant API returned an empty response while listing connections for context '{_contextName}'.");
+        }
+
+        if (!response.IsSucces || response.Value is null)
+        {
+            string errors = response.Errors is { Count: > 0 }
+                ? string.Join("; ", response.Errors)
+                : "No error details were returned.";
+            throw new InvalidOperationException(
+                $"Tenant API could not list connections for context '{_contextName}': {errors}");
         }
 
         foreach (TenantConnection tenant in response.Value)
@@ -89,7 +113,7 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
         .Select(tenant => new Assignment<string>(tenant.Key, tenant.Value))
         .ToArray();
 
-    private sealed record TenantApiResponse(bool IsSucces, TenantConnection? Value);
-    private sealed record TenantListApiResponse(bool IsSucces, List<TenantConnection>? Value);
+    private sealed record TenantApiResponse(bool IsSucces, TenantConnection? Value, List<string>? Errors);
+    private sealed record TenantListApiResponse(bool IsSucces, List<TenantConnection>? Value, List<string>? Errors);
     private sealed record TenantConnection(Guid Id, string ConnectionString, string Name);
 }
