@@ -17,7 +17,7 @@ public sealed class SaveChangesOperation : ISaveChangesOperation
         _outbox.Enroll(_context);
     }
 
-    public async Task<Result> Execute(CancellationToken cancellationToken = default)
+    public async Task<Result> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         await _outbox.SaveChangesAndFlushMessagesAsync(cancellationToken);
         return Result.Ok();

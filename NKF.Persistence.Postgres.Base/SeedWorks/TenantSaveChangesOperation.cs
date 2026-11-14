@@ -8,7 +8,7 @@ public sealed class TenantSaveChangesOperation<TContext>(ITenantDbContextSession
     : ISaveChangesOperation
     where TContext : DbContext
 {
-    public async Task<Result> Execute(CancellationToken cancellationToken = default)
+    public async Task<Result> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         await contextSession.SaveChangesAndFlushMessagesAsync(cancellationToken);
         return Result.Ok();

@@ -12,5 +12,5 @@ public abstract class TenantCommandPersistenceOperation<TContext, TRequest, TRes
         return await contextSession.GetCurrentAsync(cancellationToken);
     }
 
-    public abstract Task<TResult> Execute(TRequest request, CancellationToken cancellationToken = default);
+    public abstract Task<TResult> ExecuteAsync(TRequest request, CancellationToken cancellationToken = default);
 }

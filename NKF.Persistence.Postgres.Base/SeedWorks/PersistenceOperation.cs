@@ -8,5 +8,5 @@ public abstract class PersistenceOperation<TRequest, TResult>(DbContext context)
 {
     protected DbContext Context { get; } = context ?? throw new ArgumentNullException(nameof(context));
 
-    public abstract Task<TResult> Execute(TRequest request, CancellationToken cancellationToken = default);
+    public abstract Task<TResult> ExecuteAsync(TRequest request, CancellationToken cancellationToken = default);
 }

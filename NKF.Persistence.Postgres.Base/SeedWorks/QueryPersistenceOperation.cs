@@ -9,5 +9,5 @@ public abstract class QueryPersistenceOperation<TContext, TRequest, TResult>(TCo
 {
     protected TContext Context { get; } = context ?? throw new ArgumentNullException(nameof(context));
 
-    public abstract Task<TResult> Execute(TRequest request, CancellationToken cancellationToken = default);
+    public abstract Task<TResult> ExecuteAsync(TRequest request, CancellationToken cancellationToken = default);
 }
