@@ -67,7 +67,7 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
 
     public async Task RefreshAsync()
     {
-        string requestUri = $"{_tenantApiBaseUrl.TrimEnd('/')}/Business/get-all-businesses-filter-by-context-name?ContextName={Uri.EscapeDataString(_contextName)}";
+        string requestUri = $"{_tenantApiBaseUrl.TrimEnd('/')}/internal/business/get-all-businesses-filter-by-context-name?ContextName={Uri.EscapeDataString(_contextName)}";
         TenantListApiResponse? response;
         try
         {

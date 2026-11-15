@@ -45,6 +45,7 @@ For workflows that need an explicit transaction, inject `ITransactionManager` an
 - `NKF.Application.Base` and `NKF.Application.Contracts.Base`: handler, command, query, and pipeline contracts.
 - `NKF.Persistence.Base`: operation, unit of work, transaction, and tenant contracts.
 - `NKF.Persistence.Postgres.Base`: EF Core operation bases, unit of work, and transaction manager.
+- `NKF.Observability`: shared OpenTelemetry traces and metrics for ASP.NET Core, `HttpClient`, runtime, and Wolverine.
 - `NKF.Resources`: shared localized resource types.
 - `NKF.Domain.Tests`: shared domain test helpers.
 
