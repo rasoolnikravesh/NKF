@@ -21,6 +21,11 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>FrameWorkValidations.resx</DependentUpon>
       </Compile>
+      <Compile Update="Messages\FrameWorkSuccessMessages.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>FrameWorkSuccessMessages.resx</DependentUpon>
+      </Compile>
 
       <Compile Update="FrameWorkDataDictionary.Designer.cs">
         <DesignTime>True</DesignTime>
@@ -32,11 +37,15 @@
     <ItemGroup>
       <EmbeddedResource Update="Messages\FramWorkErrorMessages.resx">
         <Generator>PublicResXFileCodeGenerator</Generator>
-        <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+        <LastGenOutput>FramWorkErrorMessages.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Update="Messages\FrameWorkValidations.resx">
         <Generator>PublicResXFileCodeGenerator</Generator>
-        <LastGenOutput>Validations.Designer.cs</LastGenOutput>
+        <LastGenOutput>FrameWorkValidations.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Messages\FrameWorkSuccessMessages.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>FrameWorkSuccessMessages.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Update="FrameWorkDataDictionary.resx">
         <Generator>PublicResXFileCodeGenerator</Generator>
