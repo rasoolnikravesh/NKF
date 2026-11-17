@@ -9,19 +9,19 @@ public class SimpleResult
 
     public List<string> Errors { get; set; }
     public List<string> Successes { get; set; }
-    public bool IsSucces { get; set; }
+    public bool IsSuccess { get; set; }
 
-    public SimpleResult(bool isSucces, List<string> errors, List<string> successes)
+    public SimpleResult(bool isSuccess, List<string> errors, List<string> successes)
     {
         Errors = errors;
         Successes = successes;
-        IsSucces = isSucces;
+        IsSuccess = isSuccess;
     }
 
 }
 
-public class SimpleResult<T>(bool isSucces, List<string> errors, List<string> successes)
-    : SimpleResult(isSucces, errors, successes)
+public class SimpleResult<T>(bool isSuccess, List<string> errors, List<string> successes)
+    : SimpleResult(isSuccess, errors, successes)
 {
     public T? Value { get; set; }
 }
