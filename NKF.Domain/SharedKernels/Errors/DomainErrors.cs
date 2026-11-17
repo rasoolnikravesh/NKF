@@ -5,60 +5,121 @@ namespace NKF.Domain.SharedKernels.Errors;
 
 public static class DomainErrors
 {
-    public static Error Required(string fieldName, string displayName)
+    public static DomainError Required(string fieldName, string displayName)
     {
         string message = string.Format(FrameWorkValidations.Required, displayName);
-        Error error = CreateError(fieldName, displayName, message, "Required");
-        return error;
+        return new DomainError(message, ErrorType.Validation, "Required", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.Required",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName
+        });
     }
 
-    public static Error TooShort(string fieldName, string displayName, int minLength)
+    public static DomainError TooShort(string fieldName, string displayName, int minLength)
     {
         string message = string.Format(FrameWorkValidations.MinLentgh, displayName, minLength);
-        Error error = CreateError(fieldName, displayName, message, "TooShort");
-        return error;
+        return new DomainError(message, ErrorType.Validation, "TooShort", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.TooShort",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName,
+            ["MinLength"] = minLength
+        });
     }
 
-    public static Error TooLong(string fieldName, string displayName, int maxLength)
+    public static DomainError TooLong(string fieldName, string displayName, int maxLength)
     {
         string message = string.Format(FrameWorkValidations.MaxLength, displayName, maxLength);
-        Error error = CreateError(fieldName, displayName, message, "TooLong");
-        return error;
+        return new DomainError(message, ErrorType.Validation, "TooLong", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.TooLong",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName,
+            ["MaxLength"] = maxLength
+        });
     }
 
-    public static Error InValidCode(string fieldName, string displayName, string code)
+    public static DomainError InValidCode(string fieldName, string displayName, string code)
     {
-        string message = string.Format
-            (FrameWorkValidations.InValidCode, displayName);
-        Error error = CreateError(fieldName, displayName, message, "InValidCode");
-        return error;
+        string message = string.Format(FrameWorkValidations.InValidCode, displayName);
+        return new DomainError(message, ErrorType.Validation, "InValidCode", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.InValidCode",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName,
+            ["CodeValue"] = code
+        });
     }
 
-    private static Error CreateError(string fieldName, string displayName, string message, string type)
-    {
-        Error error = new Error(message)
-            .WithMetadata("Code", $"{fieldName}.{type}")
-            .WithMetadata("FieldName", fieldName)
-            .WithMetadata("DisplayName", displayName)
-            .WithMetadata("Type", type);
-        return error;
-    }
-
-    public static IError Duplicate(string fieldName, string displayName)
+    public static DomainError Duplicate(string fieldName, string displayName)
     {
         string message = string.Format(FramWorkErrorMessages.DuplicateValue, displayName);
-        Error error = CreateError(fieldName, displayName, message, "Duplicate");
-        return error;
+        return new DomainError(message, ErrorType.Conflict, "Duplicate", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.Duplicate",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName
+        });
     }
 
-    public static IError MustBeDifferent(string filedName, string displayName, string otherFiledName,
+    public static DomainError MustBeDifferent(string filedName, string displayName, string otherFiledName,
         string otherDisplayName)
     {
         string message = string.Format(FrameWorkValidations.MustBeDifferent, displayName, otherFiledName);
-        Error error = CreateError(filedName, displayName, message, "MustBeDifferent");
-        error
-            .WithMetadata("OtherFiledName", otherFiledName)
-            .WithMetadata("OtherDisplayName", otherDisplayName);
-        return error;
+        return new DomainError(message, ErrorType.Validation, "MustBeDifferent", new Dictionary<string, object>
+        {
+            ["Code"] = $"{filedName}.MustBeDifferent",
+            ["FieldName"] = filedName,
+            ["DisplayName"] = displayName,
+            ["OtherFieldName"] = otherFiledName,
+            ["OtherDisplayName"] = otherDisplayName
+        });
+    }
+
+    public static DomainError NotFound(string fieldName, string displayName, object? id = null)
+    {
+        string message = string.Format(FramWorkErrorMessages.NotFound, displayName, id);
+        return new DomainError(message, ErrorType.NotFound, "NotFound", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.NotFound",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName,
+            ["Id"] = id ?? string.Empty
+        });
+    }
+
+    public static DomainError Unauthorized(string fieldName, string displayName)
+    {
+        string message = string.Format(FramWorkErrorMessages.Unauthorized, displayName);
+        return new DomainError(message, ErrorType.Unauthorized, "Unauthorized", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.Unauthorized",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName
+        });
+    }
+
+    public static DomainError Forbidden(string fieldName, string displayName)
+    {
+        string message = string.Format(FramWorkErrorMessages.Forbidden, displayName);
+        return new DomainError(message, ErrorType.Forbidden, "Forbidden", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.Forbidden",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName
+        });
+    }
+
+    public static DomainError Unexpected(string fieldName, string displayName, string? details = null)
+    {
+        string message = string.Format(FramWorkErrorMessages.Unexpected, displayName, details ?? string.Empty);
+        return new DomainError(message, ErrorType.Unexpected, "Unexpected", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.Unexpected",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName,
+            ["Details"] = details ?? string.Empty
+        });
     }
 }

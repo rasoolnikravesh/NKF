@@ -59,5 +59,23 @@ namespace NKF.Resources.Messages {
                 return ResourceManager.GetString("RepetitiveField", resourceCulture);
             }
         }
+        
+        public static string Unauthorized {
+            get {
+                return ResourceManager.GetString("Unauthorized", resourceCulture);
+            }
+        }
+        
+        public static string Forbidden {
+            get {
+                return ResourceManager.GetString("Forbidden", resourceCulture);
+            }
+        }
+        
+        public static string Unexpected {
+            get {
+                return ResourceManager.GetString("Unexpected", resourceCulture);
+            }
+        }
     }
 }

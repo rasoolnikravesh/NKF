@@ -27,4 +27,13 @@
     <data name="RepetitiveField" xml:space="preserve">
         <value>فیلد {0} تکراری می باشد.</value>
     </data>
+    <data name="Unauthorized" xml:space="preserve">
+        <value>دسترسی غیرمجاز برای {0}.</value>
+    </data>
+    <data name="Forbidden" xml:space="preserve">
+        <value>دسترسی ممنوع برای {0}.</value>
+    </data>
+    <data name="Unexpected" xml:space="preserve">
+        <value>خطای غیرمنتظره در {0}: {1}</value>
+    </data>
 </root>
