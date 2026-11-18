@@ -51,6 +51,28 @@ public static class DomainErrors
         });
     }
 
+    public static DomainError InValidField(string fieldName, string displayName)
+    {
+        string message = string.Format(FrameWorkValidations.InValidFeild, displayName);
+        return new DomainError(message, ErrorType.Validation, "InValidField", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.InValidField",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName
+        });
+    }
+
+    public static DomainError InValidNumber(string fieldName, string displayName)
+    {
+        string message = string.Format(FrameWorkValidations.InValidNumber, displayName);
+        return new DomainError(message, ErrorType.Validation, "InValidNumber", new Dictionary<string, object>
+        {
+            ["Code"] = $"{fieldName}.InValidNumber",
+            ["FieldName"] = fieldName,
+            ["DisplayName"] = displayName
+        });
+    }
+
     public static DomainError Duplicate(string fieldName, string displayName)
     {
         string message = string.Format(FramWorkErrorMessages.DuplicateValue, displayName);
