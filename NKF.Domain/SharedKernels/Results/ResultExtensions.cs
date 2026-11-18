@@ -1,6 +1,6 @@
 using FluentResults;
 
-namespace NKF.Domain.SharedKernels;
+namespace NKF.Domain.SharedKernels.Results;
 
 
 public static class ResultExtensions

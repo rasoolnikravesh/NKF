@@ -1,6 +1,6 @@
 using FluentResults;
 using NKF.Domain.SeedWorks;
-using NKF.Domain.SharedKernels.Errors;
+using NKF.Domain.SharedKernels.Results;
 using NKF.Resources;
 
 namespace NKF.Domain.SharedKernels.ValueObjects;

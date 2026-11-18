@@ -1,4 +1,4 @@
-namespace NKF.Domain.SharedKernels.Errors;
+namespace NKF.Domain.SharedKernels.Results;
 
 public static class ErrorTypeStatusCodeMap
 {

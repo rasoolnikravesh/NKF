@@ -1,4 +1,4 @@
-namespace NKF.Domain;
+namespace NKF.Domain.SharedKernels.Results.SimpleResults;
 
 public class SimpleResult
 {

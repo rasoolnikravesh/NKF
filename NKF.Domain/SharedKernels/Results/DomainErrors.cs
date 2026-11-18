@@ -1,7 +1,6 @@
-using FluentResults;
 using NKF.Resources.Messages;
 
-namespace NKF.Domain.SharedKernels.Errors;
+namespace NKF.Domain.SharedKernels.Results;
 
 public static class DomainErrors
 {

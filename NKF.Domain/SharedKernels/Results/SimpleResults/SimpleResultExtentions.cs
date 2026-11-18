@@ -1,7 +1,6 @@
 using FluentResults;
-using NKF.Domain.SharedKernels.Errors;
 
-namespace NKF.Domain;
+namespace NKF.Domain.SharedKernels.Results.SimpleResults;
 
 public static class SimpleResultExtentions
 {
