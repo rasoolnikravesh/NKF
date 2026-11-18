@@ -43,7 +43,7 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
                 $"Verify that the tenant has a '{_contextName}' context app and that Tenant API is configured correctly.");
         }
 
-        string requestUri = $"{_tenantApiBaseUrl.TrimEnd('/')}/Tenant?Slug={Uri.EscapeDataString(tenantId)}&ContextName={Uri.EscapeDataString(_contextName)}";
+        string requestUri = $"{_tenantApiBaseUrl.TrimEnd('/')}/internal/business/runtime-connection?Slug={Uri.EscapeDataString(tenantId)}&ContextName={Uri.EscapeDataString(_contextName)}";
         TenantApiResponse? response = await Client.GetFromJsonAsync<TenantApiResponse>(requestUri);
         if (response is null)
         {
@@ -67,7 +67,7 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
 
     public async Task RefreshAsync()
     {
-        string requestUri = $"{_tenantApiBaseUrl.TrimEnd('/')}/internal/business/get-all-businesses-filter-by-context-name?ContextName={Uri.EscapeDataString(_contextName)}";
+        string requestUri = $"{_tenantApiBaseUrl.TrimEnd('/')}/internal/business/runtime-connections?ContextName={Uri.EscapeDataString(_contextName)}";
         TenantListApiResponse? response;
         try
         {
