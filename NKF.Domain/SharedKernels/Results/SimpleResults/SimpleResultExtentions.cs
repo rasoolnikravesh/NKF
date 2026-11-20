@@ -20,7 +20,10 @@ public static class SimpleResultExtentions
             [.. result.Errors.Select(x => ToSimpleError(x))],
             [.. result.Successes.Select(x => ToSimpleSuccess(x))]);
 
-        sResult.Value = result.Value;
+        if (result.IsSuccess)
+        {
+            sResult.Value = result.Value;
+        }
 
         return sResult;
 
