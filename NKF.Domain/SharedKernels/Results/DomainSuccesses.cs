@@ -4,6 +4,16 @@ namespace NKF.Domain.SharedKernels.Results;
 
 public static class DomainSuccesses
 {
+    public static DomainSuccess Accepted()
+    {
+        string message = FrameWorkSuccessMessages.ResourceManager.GetString(
+            "Accepted",
+            FrameWorkSuccessMessages.Culture)
+            ?? throw new InvalidOperationException("FrameWorkSuccessMessages.Accepted resource is missing.");
+
+        return new DomainSuccess(message, SuccessType.Accepted, "Accepted");
+    }
+
     public static DomainSuccess Created(string displayName, string? fieldName = null)
     {
         string codeField = fieldName ?? SanitizeForCode(displayName);

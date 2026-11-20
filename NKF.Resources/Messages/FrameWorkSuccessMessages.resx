@@ -39,4 +39,7 @@
     <data name="Verified" xml:space="preserve">
         <value>{0} با موفقیت تایید شد.</value>
     </data>
+    <data name="Accepted" xml:space="preserve">
+        <value>درخواست با موفقیت پذیرفته شد.</value>
+    </data>
 </root>

@@ -9,5 +9,6 @@ public enum SuccessType
     Retrieved = 4,
     Activated = 5,
     Deactivated = 6,
-    Verified = 7
+    Verified = 7,
+    Accepted = 8
 }

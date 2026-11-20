@@ -8,4 +8,5 @@
   <Project Path="NKF.Persistence.Postgres.Base/NKF.Persistence.Postgres.Base.csproj" />
   <Project Path="NKF.Observability/NKF.Observability.csproj" />
   <Project Path="NKF.Domain.Tests/NKF.Domain.Tests.csproj" />
+  <Project Path="NKF.FastEndpoints/NKF.FastEndpoints.csproj" />
 </Solution>
