@@ -12,6 +12,7 @@
     <ItemGroup>
       <ProjectReference Include="..\NKF.Domain\NKF.Domain.csproj" />
       <ProjectReference Include="..\NKF.Persistence.Base\NKF.Persistence.Base.csproj" />
+      <ProjectReference Include="..\..\Services\Tenant\Core\NKP.Services.Tenant.Application.Contracts\NKP.Services.Tenant.Application.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>

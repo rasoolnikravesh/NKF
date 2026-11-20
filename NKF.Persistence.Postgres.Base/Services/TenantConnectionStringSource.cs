@@ -3,6 +3,8 @@ using System.Net.Http.Json;
 using JasperFx.Descriptors;
 using JasperFx.MultiTenancy;
 using Microsoft.Extensions.Configuration;
+using NKF.Domain.SharedKernels.Results.SimpleResults;
+using NKP.Services.Tenant.Application.Contracts.Aggregates.Businesses.Responses;
 
 namespace NKF.Persistence.Postgres.Base.Services;
 
@@ -44,17 +46,18 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
         }
 
         string requestUri = $"{_tenantApiBaseUrl.TrimEnd('/')}/internal/business/runtime-connection?Slug={Uri.EscapeDataString(tenantId)}&ContextName={Uri.EscapeDataString(_contextName)}";
-        TenantApiResponse? response = await Client.GetFromJsonAsync<TenantApiResponse>(requestUri);
+        SimpleResult<BusinessNameWithConnectionResponse>? response =
+            await Client.GetFromJsonAsync<SimpleResult<BusinessNameWithConnectionResponse>>(requestUri);
         if (response is null)
         {
             throw new InvalidOperationException(
                 $"Tenant API returned an empty response while resolving tenant '{tenantId}' for context '{_contextName}'.");
         }
 
-        if (!response.IsSucces || response.Value is null)
+        if (!response.IsSuccess || response.Value is null)
         {
             string errors = response.Errors is { Count: > 0 }
-                ? string.Join("; ", response.Errors)
+                ? string.Join("; ", response.Errors.Select(error => error.Message))
                 : "No error details were returned.";
             throw new InvalidOperationException(
                 $"Tenant API could not load connections for context '{_contextName}': {errors}");
@@ -68,10 +71,10 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
     public async Task RefreshAsync()
     {
         string requestUri = $"{_tenantApiBaseUrl.TrimEnd('/')}/internal/business/runtime-connections?ContextName={Uri.EscapeDataString(_contextName)}";
-        TenantListApiResponse? response;
+        SimpleResult<List<BusinessNameWithConnectionResponse>>? response;
         try
         {
-            response = await Client.GetFromJsonAsync<TenantListApiResponse>(requestUri);
+            response = await Client.GetFromJsonAsync<SimpleResult<List<BusinessNameWithConnectionResponse>>>(requestUri);
         }
         catch (HttpRequestException exception)
         {
@@ -92,16 +95,16 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
                 $"Tenant API returned an empty response while listing connections for context '{_contextName}'.");
         }
 
-        if (!response.IsSucces || response.Value is null)
+        if (!response.IsSuccess || response.Value is null)
         {
             string errors = response.Errors is { Count: > 0 }
-                ? string.Join("; ", response.Errors)
+                ? string.Join("; ", response.Errors.Select(error => error.Message))
                 : "No error details were returned.";
             throw new InvalidOperationException(
                 $"Tenant API could not list connections for context '{_contextName}': {errors}");
         }
 
-        foreach (TenantConnection tenant in response.Value)
+        foreach (BusinessNameWithConnectionResponse tenant in response.Value)
         {
             _connectionStrings[tenant.Id.ToString()] = tenant.ConnectionString;
         }
@@ -119,7 +122,4 @@ public sealed class TenantConnectionStringSource : ITenantedSource<string>
             .ToArray();
     }
 
-    private sealed record TenantApiResponse(bool IsSucces, TenantConnection? Value, List<string>? Errors);
-    private sealed record TenantListApiResponse(bool IsSucces, List<TenantConnection>? Value, List<string>? Errors);
-    private sealed record TenantConnection(Guid Id, string ConnectionString, string Name);
 }
