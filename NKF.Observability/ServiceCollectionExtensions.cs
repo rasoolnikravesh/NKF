@@ -18,7 +18,10 @@ public static class ServiceCollectionExtensions
             .WithTracing(tracing => tracing
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
+                .AddEntityFrameworkCoreInstrumentation()
+                .AddRedisInstrumentation()
                 .AddSource("Wolverine")
+                .AddSource("Npgsql")
                 .AddOtlpExporter())
             .WithMetrics(metrics => metrics
                 .AddAspNetCoreInstrumentation()
