@@ -21,7 +21,6 @@ public static class ServiceCollectionExtensions
                 .AddEntityFrameworkCoreInstrumentation()
                 .AddRedisInstrumentation()
                 .AddSource("Wolverine")
-                .AddSource("Npgsql")
                 .AddOtlpExporter())
             .WithMetrics(metrics => metrics
                 .AddAspNetCoreInstrumentation()
