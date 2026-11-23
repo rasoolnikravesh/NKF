@@ -4,7 +4,7 @@ using NKF.Domain.SharedKernels.ValueObjects;
 
 namespace NKF.Domain.SeedWorks;
 
-public abstract class Entity<T, TId> : IEntity<TId>, IDeepDuplicatable<T>, IAuditable, ITenantAware
+public abstract class Entity<T, TId> : IEntity<TId>, IDeepDuplicatable<T>, IOwnedByUser, ITenantAware
     where T : Entity<T, TId>
     where TId : EntityId
 {
@@ -33,13 +33,10 @@ public abstract class Entity<T, TId> : IEntity<TId>, IDeepDuplicatable<T>, IAudi
     {
     }
 
-    protected Entity(TId id, Guid createdByUserId) : this()
+    protected Entity(TId id) : this()
     {
         Id = id;
         IsDeleted = false;
-        Result<CreateDate> result = CreateDate.Create(DateTime.UtcNow);
-        CreatedDateTime = result.Value;
-        CreatedByUserId = createdByUserId;
     }
 
     public static bool operator ==(Entity<T, TId>? left, Entity<T, TId>? right)
@@ -99,12 +96,13 @@ public abstract class Entity<T, TId> : IEntity<TId>, IDeepDuplicatable<T>, IAudi
 
     protected virtual void CopyTo(T target, DuplicateContext context)
     {
-        target.CreatedByUserId = CreatedByUserId;
-        target.CreatedDateTime = CreatedDateTime;
-        target.UpdatedDateTime = UpdatedDateTime;
-        target.UpdatedByUserId = UpdatedByUserId;
+        target.CreatedByUserId = null;
+        target.CreatedDateTime = null!;
+        target.UpdatedDateTime = null!;
+        target.UpdatedByUserId = null;
         target.OwnedByUserId = OwnedByUserId;
-        target.IsDeleted = IsDeleted;
+        target.IsDeleted = false;
+        target.DeletedByUserId = null;
         target.TenantId = TenantId;
     }
 

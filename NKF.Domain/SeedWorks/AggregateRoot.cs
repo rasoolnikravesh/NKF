@@ -14,7 +14,7 @@ public abstract class AggregateRoot<T, TId> : Entity<T, TId>, IAggregateRoot<TId
 {
     private static readonly ConcurrentDictionary<(Type aggregateType, Type eventType), Func<object, object, object>> ApplyFuncS = new();
 
-    protected AggregateRoot(TId id, Guid createdByUserId) : base(id, createdByUserId)
+    protected AggregateRoot(TId id) : base(id)
     {
         _domainEvents = [];
     }
